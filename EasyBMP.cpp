@@ -282,7 +282,7 @@ BMP::BMP( BMP& Input )
 	{
 		for ( int i = 0; i < Width ; i++ )
 		{
-			Pixels[i][j] = *Input(i,j);
+			Pixels[i][j] = Input(i,j);
 		//   Pixels[i][j] = Input.GetPixel(i,j); // *Input(i,j);
 		}
 	}
@@ -297,7 +297,7 @@ BMP::~BMP()
 	delete [] MetaData2;
 } 
 
-RGBApixel* BMP::operator()(int i, int j)
+RGBApixel& BMP::operator()(int i, int j)
 {
 	bool Warn = false;
 	if (i >= Width)  { i = Width - 1; Warn = true; }
@@ -310,7 +310,7 @@ RGBApixel* BMP::operator()(int i, int j)
 		 	 << "                 Truncating request to fit in the range [0,"
 			 << Width - 1 << "] x [0," << Height - 1 << "]." << endl;
 	}
-	return &(Pixels[i][j]);
+	return Pixels[i][j];
 }
 
 // int BMP::TellBitDepth( void ) const
@@ -1273,18 +1273,18 @@ int GetBitmapColorDepth(const string& szFileNameIn)
 void PixelToPixelCopy(BMP& From, int FromX, int FromY,
                       BMP& To, int ToX, int ToY)
 {
-	*To(ToX,ToY) = *From(FromX,FromY);
+	To(ToX,ToY) = From(FromX,FromY);
 }
 
 void PixelToPixelCopyTransparent(BMP& From, int FromX, int FromY,
                                  BMP& To, int ToX, int ToY,
                                  RGBApixel& Transparent)
 {
-	if (From(FromX,FromY)->Red != Transparent.Red ||
-		From(FromX,FromY)->Green != Transparent.Green ||
-		From(FromX,FromY)->Blue != Transparent.Blue)
+	if (From(FromX,FromY).Red != Transparent.Red ||
+		From(FromX,FromY).Green != Transparent.Green ||
+		From(FromX,FromY).Blue != Transparent.Blue)
 	{
-		*To(ToX,ToY) = *From(FromX,FromY);
+		To(ToX,ToY) = From(FromX,FromY);
 	}
 }
 
@@ -1394,7 +1394,7 @@ bool BMP::Read8bitRow(ebmpBYTE* Buffer, int BufferSize, int Row)
 
 	for (int i = 0; i < Width; i++) {
 		int Index = Buffer[i];
-		*(this->operator()(i,Row)) = GetColor(Index);
+		this->operator()(i,Row) = GetColor(Index);
 	}
 	return true;
 }
@@ -1412,7 +1412,7 @@ bool BMP::Read4bitRow(ebmpBYTE* Buffer, int BufferSize, int Row)
 		j = 0;
 		while (j < 2 && i < Width) {
 			int Index = (int) ((Buffer[k] & Masks[j]) >> Shifts[j]);
-			*(this->operator()(i, Row)) = GetColor(Index);
+			this->operator()(i, Row) = GetColor(Index);
 			i++; j++;
 		}
 		k++;
@@ -1434,7 +1434,7 @@ bool BMP::Read1bitRow(ebmpBYTE* Buffer, int BufferSize, int Row)
 		j = 0;
 		while (j < 8 && i < Width) {
 			int Index = (int) ((Buffer[k] & Masks[j]) >> Shifts[j]);
-			*(this->operator()(i,Row)) = GetColor(Index);
+			this->operator()(i,Row) = GetColor(Index);
 			i++; j++;
 		}
 		k++;
@@ -1629,36 +1629,36 @@ bool Rescale(BMP& InputImage, char mode, int NewDimension)
 			I = (int) floor(ThetaI);
 			ThetaI -= I;
 
-			InputImage(i, j)->Red = (ebmpBYTE)
-			( (1.0 - ThetaI - ThetaJ + ThetaI * ThetaJ) * (OldImage(I,J)->Red)
-			 + (ThetaI - ThetaI * ThetaJ) * (OldImage(I+1, J)->Red)
-			 + (ThetaJ - ThetaI * ThetaJ) * (OldImage(I, J+1)->Red)
-			 + (ThetaI * ThetaJ) * (OldImage(I+1, J+1)->Red) );
-			InputImage(i, j)->Green = (ebmpBYTE)
-			( (1.0 - ThetaI - ThetaJ + ThetaI * ThetaJ) * OldImage(I,J)->Green
-			 + (ThetaI - ThetaI * ThetaJ) * OldImage(I+1, J)->Green
-			 + (ThetaJ - ThetaI * ThetaJ) * OldImage(I, J+1)->Green
-			 + (ThetaI * ThetaJ) * OldImage(I+1, J+1)->Green );
-			InputImage(i, j)->Blue = (ebmpBYTE)
-			( (1.0 - ThetaI - ThetaJ + ThetaI * ThetaJ) * OldImage(I,J)->Blue
-			 + (ThetaI - ThetaI * ThetaJ) * OldImage(I+1, J)->Blue
-			 + (ThetaJ - ThetaI * ThetaJ) * OldImage(I, J+1)->Blue
-			 + (ThetaI * ThetaJ) * OldImage(I+1, J+1)->Blue );
+			InputImage(i, j).Red = (ebmpBYTE)
+			( (1.0 - ThetaI - ThetaJ + ThetaI * ThetaJ) * (OldImage(I,J).Red)
+			 + (ThetaI - ThetaI * ThetaJ) * (OldImage(I+1, J).Red)
+			 + (ThetaJ - ThetaI * ThetaJ) * (OldImage(I, J+1).Red)
+			 + (ThetaI * ThetaJ) * (OldImage(I+1, J+1).Red) );
+			InputImage(i, j).Green = (ebmpBYTE)
+			( (1.0 - ThetaI - ThetaJ + ThetaI * ThetaJ) * OldImage(I,J).Green
+			 + (ThetaI - ThetaI * ThetaJ) * OldImage(I+1, J).Green
+			 + (ThetaJ - ThetaI * ThetaJ) * OldImage(I, J+1).Green
+			 + (ThetaI * ThetaJ) * OldImage(I+1, J+1).Green );
+			InputImage(i, j).Blue = (ebmpBYTE)
+			( (1.0 - ThetaI - ThetaJ + ThetaI * ThetaJ) * OldImage(I,J).Blue
+			 + (ThetaI - ThetaI * ThetaJ) * OldImage(I+1, J).Blue
+			 + (ThetaJ - ThetaI * ThetaJ) * OldImage(I, J+1).Blue
+			 + (ThetaI * ThetaJ) * OldImage(I+1, J+1).Blue );
 		}
-		InputImage(NewWidth - 1, j)->Red   = (ebmpBYTE) ((1.0 - ThetaJ) * (OldImage(OldWidth - 1, J)->Red)   + ThetaJ * (OldImage(OldWidth-1, J+1)->Red));
-		InputImage(NewWidth - 1, j)->Green = (ebmpBYTE)	((1.0 - ThetaJ) * (OldImage(OldWidth - 1, J)->Green) + ThetaJ * (OldImage(OldWidth-1, J+1)->Green));
-		InputImage(NewWidth - 1, j)->Blue  = (ebmpBYTE) ((1.0 - ThetaJ) * (OldImage(OldWidth - 1, J)->Blue)  + ThetaJ * (OldImage(OldWidth-1, J+1)->Blue));
+		InputImage(NewWidth - 1, j).Red   = (ebmpBYTE) ((1.0 - ThetaJ) * (OldImage(OldWidth - 1, J).Red)   + ThetaJ * (OldImage(OldWidth-1, J+1).Red));
+		InputImage(NewWidth - 1, j).Green = (ebmpBYTE)	((1.0 - ThetaJ) * (OldImage(OldWidth - 1, J).Green) + ThetaJ * (OldImage(OldWidth-1, J+1).Green));
+		InputImage(NewWidth - 1, j).Blue  = (ebmpBYTE) ((1.0 - ThetaJ) * (OldImage(OldWidth - 1, J).Blue)  + ThetaJ * (OldImage(OldWidth-1, J+1).Blue));
 	}
 
 	for (int i = 0; i < NewWidth-1 ; i++) {
 		ThetaI = (double)(i * (OldWidth - 1.0)) / (double)(NewWidth - 1.0);
 		I = (int) floor(ThetaI);
 		ThetaI -= I;
-		InputImage(i, NewHeight - 1)->Red   = (ebmpBYTE) ((1.0 - ThetaI) * (OldImage(I, OldHeight - 1)->Red)   + ThetaI * (OldImage(I, OldHeight - 1)->Red));
-		InputImage(i, NewHeight - 1)->Green = (ebmpBYTE) ((1.0 - ThetaI) * (OldImage(I, OldHeight - 1)->Green) + ThetaI * (OldImage(I, OldHeight - 1)->Green));
-		InputImage(i, NewHeight - 1)->Blue  = (ebmpBYTE) ((1.0 - ThetaI) * (OldImage(I, OldHeight - 1)->Blue)  + ThetaI * (OldImage(I, OldHeight - 1)->Blue));
+		InputImage(i, NewHeight - 1).Red   = (ebmpBYTE) ((1.0 - ThetaI) * (OldImage(I, OldHeight - 1).Red)   + ThetaI * (OldImage(I, OldHeight - 1).Red));
+		InputImage(i, NewHeight - 1).Green = (ebmpBYTE) ((1.0 - ThetaI) * (OldImage(I, OldHeight - 1).Green) + ThetaI * (OldImage(I, OldHeight - 1).Green));
+		InputImage(i, NewHeight - 1).Blue  = (ebmpBYTE) ((1.0 - ThetaI) * (OldImage(I, OldHeight - 1).Blue)  + ThetaI * (OldImage(I, OldHeight - 1).Blue));
 	}
 	
-	*InputImage(NewWidth - 1, NewHeight - 1) = *OldImage(OldWidth - 1,OldHeight - 1);
+	InputImage(NewWidth - 1, NewHeight - 1) = OldImage(OldWidth - 1, OldHeight - 1);
 	return true;
 }

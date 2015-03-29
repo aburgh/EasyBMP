@@ -28,7 +28,7 @@ int main( int argc, char* argv[] )
       << "Using EasyBMP Version " << _EasyBMP_Version_ << endl << endl
       << "Copyright (c) by the EasyBMP Project 2005-6" << endl
       << "WWW: http://easybmp.sourceforge.net" << endl << endl;
-	  
+
  BMP Text;
  Text.ReadFromFile("EasyBMPtext.bmp");
   
@@ -46,12 +46,12 @@ int main( int argc, char* argv[] )
  RangedPixelToPixelCopyTransparent( Text, 0, 380, 
                                     43, 0,
 									Output, 110,5, 
-									*Text(0,0) );
+									Text(0,0) );
 
  RangedPixelToPixelCopyTransparent( Text, 0, Text.TellWidth()-1, 
                                     Text.TellWidth()-1, 50,
 									Output, 100,442, 
-									*Text(0,49) );
+									Text(0,49) );
 					
  Output.SetBitDepth( 32 );
  cout << "writing 32bpp ... " << endl;					

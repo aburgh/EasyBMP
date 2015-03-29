@@ -66,7 +66,7 @@ public:
 	BMP();
 	BMP(BMP& Input);
 	~BMP();
-	RGBApixel* operator()(int i,int j);
+	RGBApixel& operator()(int i,int j);
 
 	RGBApixel GetPixel(int i, int j) const;
 	bool SetPixel(int i, int j, RGBApixel NewPixel);
