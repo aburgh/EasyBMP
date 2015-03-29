@@ -75,8 +75,12 @@ public:
 
 	bool SetSize(int NewWidth, int NewHeight);
 	bool SetBitDepth(int NewDepth);
-	bool WriteToFile(const std::string& FileName);
+
 	bool ReadFromFile(const std::string& FileName);
+	bool ReadFromBuffer(const unsigned char* buffer, size_t size);
+
+	bool WriteToFile(const std::string& FileName);
+	bool WriteToBuffer(unsigned char* buffer, size_t size);
 
 	RGBApixel GetColor(int ColorNumber);
 	bool SetColor(int ColorNumber, RGBApixel NewColor);

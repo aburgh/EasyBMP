@@ -26,20 +26,16 @@ using namespace std;
 
 bool EasyBMPwarnings = true;
 
-void SetEasyBMPwarningsOff( void )
-{ EasyBMPwarnings = false; }
-void SetEasyBMPwarningsOn( void )
-{ EasyBMPwarnings = true; }
-bool GetEasyBMPwarningState( void )
-{ return EasyBMPwarnings; }
+void SetEasyBMPwarningsOff(void)  { EasyBMPwarnings = false; }
+void SetEasyBMPwarningsOn(void)   { EasyBMPwarnings = true; }
+bool GetEasyBMPwarningState(void) { return EasyBMPwarnings; }
 
 /* These functions are defined in EasyBMP_DataStructures.h */
 
-int IntPow( int base, int exponent )
+int IntPow(int base, int exponent)
 {
 	int output = 1;
-	for (int i = 0 ; i < exponent ; i++ )
-	{ output *= base; }
+	for (int i = 0; i < exponent; i++) output *= base;
 	return output;
 }
 
@@ -50,13 +46,13 @@ BMFH::BMFH()
 	bfReserved2 = 0;
 }
 
-void BMFH::SwitchEndianess( void )
+void BMFH::SwitchEndianess(void)
 {
-	bfType = FlipWORD( bfType );
-	bfSize = FlipDWORD( bfSize );
-	bfReserved1 = FlipWORD( bfReserved1 );
-	bfReserved2 = FlipWORD( bfReserved2 );
-	bfOffBits = FlipDWORD( bfOffBits );
+	bfType = FlipWORD(bfType);
+	bfSize = FlipDWORD(bfSize);
+	bfReserved1 = FlipWORD(bfReserved1);
+	bfReserved2 = FlipWORD(bfReserved2);
+	bfOffBits = FlipDWORD(bfOffBits);
 	return;
 }
 
@@ -70,23 +66,23 @@ BMIH::BMIH()
 	biClrImportant = 0;
 }
 
-void BMIH::SwitchEndianess( void )
+void BMIH::SwitchEndianess(void)
 {
-	biSize = FlipDWORD( biSize );
-	biWidth = FlipDWORD( biWidth );
-	biHeight = FlipDWORD( biHeight );
-	biPlanes = FlipWORD( biPlanes );
-	biBitCount = FlipWORD( biBitCount );
-	biCompression = FlipDWORD( biCompression );
-	biSizeImage = FlipDWORD( biSizeImage );
-	biXPelsPerMeter = FlipDWORD( biXPelsPerMeter );
-	biYPelsPerMeter = FlipDWORD( biYPelsPerMeter );
-	biClrUsed = FlipDWORD( biClrUsed );
-	biClrImportant = FlipDWORD( biClrImportant );
+	biSize = FlipDWORD(biSize);
+	biWidth = FlipDWORD(biWidth);
+	biHeight = FlipDWORD(biHeight);
+	biPlanes = FlipWORD(biPlanes);
+	biBitCount = FlipWORD(biBitCount);
+	biCompression = FlipDWORD(biCompression);
+	biSizeImage = FlipDWORD(biSizeImage);
+	biXPelsPerMeter = FlipDWORD(biXPelsPerMeter);
+	biYPelsPerMeter = FlipDWORD(biYPelsPerMeter);
+	biClrUsed = FlipDWORD(biClrUsed);
+	biClrImportant = FlipDWORD(biClrImportant);
 	return;
 }
 
-void BMIH::display( void )
+void BMIH::display(void)
 {
 	cout << "biSize: " << (int) biSize << endl
 		 << "biWidth: " << (int) biWidth << endl
@@ -101,7 +97,7 @@ void BMIH::display( void )
 		 << "biClrImportant: " << (int) biClrImportant << endl << endl;
 }
 
-void BMFH::display( void )
+void BMFH::display(void)
 {
 	cout << "bfType: " << (int) bfType << endl
 		 << "bfSize: " << (int) bfSize << endl
@@ -112,18 +108,14 @@ void BMFH::display( void )
 
 /* These functions are defined in EasyBMP_BMP.h */
 
-RGBApixel BMP::GetPixel( int i, int j ) const
+RGBApixel BMP::GetPixel(int i, int j) const
 {
 	bool Warn = false;
-	if ( i >= Width )
-	{ i = Width - 1; Warn = true; }
-	if ( i < 0 )
-	{ i = 0; Warn = true; }
-	if ( j >= Height )
-	{ j = Height - 1; Warn = true; }
-	if ( j < 0 )
-	{ j = 0; Warn = true; }
-	if ( Warn && EasyBMPwarnings )
+	if (i < 0) { i = 0; Warn = true; }
+	if (j < 0) { j = 0; Warn = true; }
+	if (i >= Width)  { i = Width - 1; Warn = true; }
+	if (j >= Height) { j = Height - 1; Warn = true; }
+	if (Warn && EasyBMPwarnings)
 	{
 		cout << "EasyBMP Warning: Attempted to access non-existent pixel;" << endl
 			 << "                 Truncating request to fit in the range [0,"
@@ -175,7 +167,7 @@ bool BMP::SetColor( int ColorNumber , RGBApixel NewColor )
 }
 
 // RGBApixel BMP::GetColor( int ColorNumber ) const
-RGBApixel BMP::GetColor( int ColorNumber )
+RGBApixel BMP::GetColor(int ColorNumber)
 {
 	RGBApixel Output;
 	Output.Red   = 255;
@@ -235,7 +227,7 @@ BMP::BMP()
 }
 
 // BMP::BMP( const BMP& Input )
-BMP::BMP( BMP& Input )
+BMP::BMP(BMP& Input)
 {
 	// first, make the image empty.
 
@@ -255,33 +247,30 @@ BMP::BMP( BMP& Input )
 
 	// now, set the correct bit depth
 
-	SetBitDepth( Input.TellBitDepth() );
+	SetBitDepth(Input.TellBitDepth());
 
 	// set the correct pixel size
 
-	SetSize( Input.TellWidth() , Input.TellHeight() );
+	SetSize(Input.TellWidth(), Input.TellHeight());
 
 	// set the DPI information from Input
 
-	SetDPI( Input.TellHorizontalDPI() , Input.TellVerticalDPI() );
+	SetDPI(Input.TellHorizontalDPI(), Input.TellVerticalDPI());
 
 	// if there is a color table, get all the colors
 
-	if ( BitDepth == 1 || BitDepth == 4 ||
-	   BitDepth == 8 )
+	if (BitDepth == 1 || BitDepth == 4 || BitDepth == 8)
 	{
-		for ( int k = 0 ; k < TellNumberOfColors() ; k++ )
+		for (int k = 0; k < TellNumberOfColors() ; k++)
 		{
-			SetColor( k, Input.GetColor( k ));
+			SetColor(k, Input.GetColor(k));
 		}
 	}
 
 	// get all the pixels
 
-	for ( int j = 0; j < Height ; j++ )
-	{
-		for ( int i = 0; i < Width ; i++ )
-		{
+	for (int j = 0; j < Height; j++) {
+		for (int i = 0; i < Width; i++) {
 			Pixels[i][j] = Input(i,j);
 		//   Pixels[i][j] = Input.GetPixel(i,j); // *Input(i,j);
 		}
@@ -300,10 +289,10 @@ BMP::~BMP()
 RGBApixel& BMP::operator()(int i, int j)
 {
 	bool Warn = false;
-	if (i >= Width)  { i = Width - 1; Warn = true; }
 	if (i < 0 )      { i = 0; Warn = true; }
-	if (j >= Height) { j = Height - 1; Warn = true; }
 	if (j < 0 )	     { j = 0; Warn = true; }
+	if (i >= Width)  { i = Width - 1; Warn = true; }
+	if (j >= Height) { j = Height - 1; Warn = true; }
 	if (Warn && EasyBMPwarnings)
 	{
 		cout << "EasyBMP Warning: Attempted to access non-existent pixel;" << endl
@@ -314,26 +303,23 @@ RGBApixel& BMP::operator()(int i, int j)
 }
 
 // int BMP::TellBitDepth( void ) const
-int BMP::TellBitDepth( void )
-{ return BitDepth; }
+int BMP::TellBitDepth(void) { return BitDepth; }
 
 // int BMP::TellHeight( void ) const
-int BMP::TellHeight( void )
-{ return Height; }
+int BMP::TellHeight(void) { return Height; }
 
 // int BMP::TellWidth( void ) const
-int BMP::TellWidth( void )
-{ return Width; }
+int BMP::TellWidth(void) { return Width; }
 
 // int BMP::TellNumberOfColors( void ) const
-int BMP::TellNumberOfColors( void )
+int BMP::TellNumberOfColors(void)
 {
- int output = IntPow( 2, BitDepth );
- if (BitDepth == 32) { output = IntPow( 2, 24 ); }
- return output;
+	int output = IntPow(2, BitDepth);
+	if (BitDepth == 32) { output = IntPow(2, 24); }
+	return output;
 }
 
-bool BMP::SetBitDepth( int NewDepth )
+bool BMP::SetBitDepth(int NewDepth)
 {
 	if (NewDepth != 1 && NewDepth != 4 &&
 		NewDepth != 8 && NewDepth != 16 &&
@@ -350,14 +336,14 @@ bool BMP::SetBitDepth( int NewDepth )
 
 	BitDepth = NewDepth;
 	delete [] Colors;
-	int NumberOfColors = IntPow( 2, BitDepth );
-	if ( BitDepth == 1 || BitDepth == 4 || BitDepth == 8 ) {
+	int NumberOfColors = IntPow(2, BitDepth);
+	if (BitDepth == 1 || BitDepth == 4 || BitDepth == 8) {
 		Colors = new RGBApixel [NumberOfColors];
 	}
 	else {
 		Colors = nullptr;
 	}
-	if ( BitDepth == 1 || BitDepth == 4 || BitDepth == 8 ) {
+	if (BitDepth == 1 || BitDepth == 4 || BitDepth == 8) {
 		CreateStandardColorTable();
 	}
 	
@@ -366,7 +352,7 @@ bool BMP::SetBitDepth( int NewDepth )
 
 bool BMP::SetSize(int NewWidth , int NewHeight )
 {
-	if ( NewWidth <= 0 || NewHeight <= 0 )
+	if (NewWidth <= 0 || NewHeight <= 0)
 	{
 		if (EasyBMPwarnings)
 		{
@@ -403,7 +389,7 @@ bool BMP::SetSize(int NewWidth , int NewHeight )
 	return true;
 }
 
-bool BMP::WriteToFile(const string& FileName )
+bool BMP::WriteToFile(const string& FileName)
 {
 	if (not EasyBMPcheckDataSize()) {
 		if (EasyBMPwarnings) {
@@ -416,7 +402,7 @@ bool BMP::WriteToFile(const string& FileName )
 		return false;
 	}
 
-	FILE* fp = fopen(FileName.c_str(), "wb" );
+	FILE* fp = fopen(FileName.c_str(), "wb");
 	if (not fp) {
 		if (EasyBMPwarnings) {
 			cout << "EasyBMP Error: Cannot open file "
