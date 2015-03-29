@@ -1,0 +1,445 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		96C171A01AC8060E00AAF1C9 /* EasyBMP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96C1718D1AC803C200AAF1C9 /* EasyBMP.cpp */; };
+		96C171A11AC8063D00AAF1C9 /* EasyBMP_BMP.h in Headers */ = {isa = PBXBuildFile; fileRef = 96C1718A1AC803C200AAF1C9 /* EasyBMP_BMP.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		96C171A21AC8063D00AAF1C9 /* EasyBMP_DataStructures.h in Headers */ = {isa = PBXBuildFile; fileRef = 96C1718B1AC803C200AAF1C9 /* EasyBMP_DataStructures.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		96C171A31AC8063D00AAF1C9 /* EasyBMP_VariousBMPutilities.h in Headers */ = {isa = PBXBuildFile; fileRef = 96C1718C1AC803C200AAF1C9 /* EasyBMP_VariousBMPutilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		96C171A41AC8063D00AAF1C9 /* EasyBMP.h in Headers */ = {isa = PBXBuildFile; fileRef = 96C1718E1AC803C200AAF1C9 /* EasyBMP.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		96C171B01AC8707800AAF1C9 /* EasyBMPsample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96C171841AC803C200AAF1C9 /* EasyBMPsample.cpp */; };
+		96C171B11AC8708300AAF1C9 /* libebmp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 96C171941AC804A700AAF1C9 /* libebmp.a */; };
+		96C171B41AC871FC00AAF1C9 /* EasyBMPbackground.bmp in CopyFiles */ = {isa = PBXBuildFile; fileRef = 96C171831AC803C200AAF1C9 /* EasyBMPbackground.bmp */; };
+		96C171B51AC871FC00AAF1C9 /* EasyBMPtext.bmp in CopyFiles */ = {isa = PBXBuildFile; fileRef = 96C171851AC803C200AAF1C9 /* EasyBMPtext.bmp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		96C171B21AC8708B00AAF1C9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 96C1717A1AC8035D00AAF1C9 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 96C171931AC804A700AAF1C9;
+			remoteInfo = libebmp;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		96C171A71AC8705D00AAF1C9 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				96C171B41AC871FC00AAF1C9 /* EasyBMPbackground.bmp in CopyFiles */,
+				96C171B51AC871FC00AAF1C9 /* EasyBMPtext.bmp in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		96C171801AC803C200AAF1C9 /* BSD_(revised)_license.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "BSD_(revised)_license.txt"; sourceTree = "<group>"; };
+		96C171811AC803C200AAF1C9 /* EasyBMP_ChangeLog.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = EasyBMP_ChangeLog.txt; sourceTree = "<group>"; };
+		96C171831AC803C200AAF1C9 /* EasyBMPbackground.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = EasyBMPbackground.bmp; sourceTree = "<group>"; };
+		96C171841AC803C200AAF1C9 /* EasyBMPsample.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EasyBMPsample.cpp; sourceTree = "<group>"; };
+		96C171851AC803C200AAF1C9 /* EasyBMPtext.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = EasyBMPtext.bmp; sourceTree = "<group>"; };
+		96C171861AC803C200AAF1C9 /* makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = makefile; sourceTree = "<group>"; };
+		96C1718A1AC803C200AAF1C9 /* EasyBMP_BMP.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EasyBMP_BMP.h; sourceTree = "<group>"; };
+		96C1718B1AC803C200AAF1C9 /* EasyBMP_DataStructures.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EasyBMP_DataStructures.h; sourceTree = "<group>"; };
+		96C1718C1AC803C200AAF1C9 /* EasyBMP_VariousBMPutilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EasyBMP_VariousBMPutilities.h; sourceTree = "<group>"; };
+		96C1718D1AC803C200AAF1C9 /* EasyBMP.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EasyBMP.cpp; sourceTree = "<group>"; };
+		96C1718E1AC803C200AAF1C9 /* EasyBMP.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EasyBMP.h; sourceTree = "<group>"; };
+		96C171941AC804A700AAF1C9 /* libebmp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libebmp.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		96C171A91AC8705D00AAF1C9 /* EasyBMPTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = EasyBMPTest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		96C171911AC804A700AAF1C9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		96C171A61AC8705D00AAF1C9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				96C171B11AC8708300AAF1C9 /* libebmp.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		96C171791AC8035D00AAF1C9 = {
+			isa = PBXGroup;
+			children = (
+				96C171801AC803C200AAF1C9 /* BSD_(revised)_license.txt */,
+				96C171811AC803C200AAF1C9 /* EasyBMP_ChangeLog.txt */,
+				96C1718A1AC803C200AAF1C9 /* EasyBMP_BMP.h */,
+				96C1718B1AC803C200AAF1C9 /* EasyBMP_DataStructures.h */,
+				96C1718C1AC803C200AAF1C9 /* EasyBMP_VariousBMPutilities.h */,
+				96C1718D1AC803C200AAF1C9 /* EasyBMP.cpp */,
+				96C1718E1AC803C200AAF1C9 /* EasyBMP.h */,
+				96C171821AC803C200AAF1C9 /* sample */,
+				96C171951AC804A700AAF1C9 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		96C171821AC803C200AAF1C9 /* sample */ = {
+			isa = PBXGroup;
+			children = (
+				96C171831AC803C200AAF1C9 /* EasyBMPbackground.bmp */,
+				96C171841AC803C200AAF1C9 /* EasyBMPsample.cpp */,
+				96C171851AC803C200AAF1C9 /* EasyBMPtext.bmp */,
+				96C171861AC803C200AAF1C9 /* makefile */,
+			);
+			path = sample;
+			sourceTree = "<group>";
+		};
+		96C171951AC804A700AAF1C9 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				96C171941AC804A700AAF1C9 /* libebmp.a */,
+				96C171A91AC8705D00AAF1C9 /* EasyBMPTest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		96C171921AC804A700AAF1C9 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				96C171A11AC8063D00AAF1C9 /* EasyBMP_BMP.h in Headers */,
+				96C171A21AC8063D00AAF1C9 /* EasyBMP_DataStructures.h in Headers */,
+				96C171A31AC8063D00AAF1C9 /* EasyBMP_VariousBMPutilities.h in Headers */,
+				96C171A41AC8063D00AAF1C9 /* EasyBMP.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		96C171931AC804A700AAF1C9 /* libebmp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 96C1719D1AC804A700AAF1C9 /* Build configuration list for PBXNativeTarget "libebmp" */;
+			buildPhases = (
+				96C171901AC804A700AAF1C9 /* Sources */,
+				96C171911AC804A700AAF1C9 /* Frameworks */,
+				96C171921AC804A700AAF1C9 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = libebmp;
+			productName = EasyBMP.a;
+			productReference = 96C171941AC804A700AAF1C9 /* libebmp.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		96C171A81AC8705D00AAF1C9 /* EasyBMPTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 96C171AD1AC8705D00AAF1C9 /* Build configuration list for PBXNativeTarget "EasyBMPTest" */;
+			buildPhases = (
+				96C171A51AC8705D00AAF1C9 /* Sources */,
+				96C171A61AC8705D00AAF1C9 /* Frameworks */,
+				96C171A71AC8705D00AAF1C9 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				96C171B31AC8708B00AAF1C9 /* PBXTargetDependency */,
+			);
+			name = EasyBMPTest;
+			productName = EasyBMPTest;
+			productReference = 96C171A91AC8705D00AAF1C9 /* EasyBMPTest */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		96C1717A1AC8035D00AAF1C9 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0630;
+				TargetAttributes = {
+					96C171931AC804A700AAF1C9 = {
+						CreatedOnToolsVersion = 6.3;
+					};
+					96C171A81AC8705D00AAF1C9 = {
+						CreatedOnToolsVersion = 6.3;
+					};
+				};
+			};
+			buildConfigurationList = 96C1717D1AC8035D00AAF1C9 /* Build configuration list for PBXProject "EasyBMP" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 96C171791AC8035D00AAF1C9;
+			productRefGroup = 96C171951AC804A700AAF1C9 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				96C171931AC804A700AAF1C9 /* libebmp */,
+				96C171A81AC8705D00AAF1C9 /* EasyBMPTest */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		96C171901AC804A700AAF1C9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				96C171A01AC8060E00AAF1C9 /* EasyBMP.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		96C171A51AC8705D00AAF1C9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				96C171B01AC8707800AAF1C9 /* EasyBMPsample.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		96C171B31AC8708B00AAF1C9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 96C171931AC804A700AAF1C9 /* libebmp */;
+			targetProxy = 96C171B21AC8708B00AAF1C9 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		96C1717E1AC8035D00AAF1C9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_LINK_OBJC_RUNTIME = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_UNROLL_LOOPS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+			};
+			name = Debug;
+		};
+		96C1717F1AC8035D00AAF1C9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_LINK_OBJC_RUNTIME = NO;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_UNROLL_LOOPS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+			};
+			name = Release;
+		};
+		96C1719E1AC804A700AAF1C9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				EXECUTABLE_PREFIX = "";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		96C1719F1AC804A700AAF1C9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				EXECUTABLE_PREFIX = "";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		96C171AE1AC8705D00AAF1C9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LLVM_LTO = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		96C171AF1AC8705D00AAF1C9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LLVM_LTO = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		96C1717D1AC8035D00AAF1C9 /* Build configuration list for PBXProject "EasyBMP" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				96C1717E1AC8035D00AAF1C9 /* Debug */,
+				96C1717F1AC8035D00AAF1C9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		96C1719D1AC804A700AAF1C9 /* Build configuration list for PBXNativeTarget "libebmp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				96C1719E1AC804A700AAF1C9 /* Debug */,
+				96C1719F1AC804A700AAF1C9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		96C171AD1AC8705D00AAF1C9 /* Build configuration list for PBXNativeTarget "EasyBMPTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				96C171AE1AC8705D00AAF1C9 /* Debug */,
+				96C171AF1AC8705D00AAF1C9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 96C1717A1AC8035D00AAF1C9 /* Project object */;
+}
