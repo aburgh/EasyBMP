@@ -115,7 +115,7 @@ RGBApixel BMP::GetPixel(int i, int j) const
 	if (j < 0) { j = 0; Warn = true; }
 	if (i >= Width)  { i = Width - 1; Warn = true; }
 	if (j >= Height) { j = Height - 1; Warn = true; }
-	if (Warn && EasyBMPwarnings)
+	if (Warn and EasyBMPwarnings)
 	{
 		cout << "EasyBMP Warning: Attempted to access non-existent pixel;" << endl
 			 << "                 Truncating request to fit in the range [0,"
@@ -133,7 +133,7 @@ bool BMP::SetPixel( int i, int j, RGBApixel NewPixel )
 
 bool BMP::SetColor( int ColorNumber , RGBApixel NewColor )
 {
-	if ( BitDepth != 1 && BitDepth != 4 && BitDepth != 8 )
+	if ( BitDepth != 1 and BitDepth != 4 and BitDepth != 8 )
 	{
 		if ( EasyBMPwarnings )
 		{
@@ -175,7 +175,7 @@ RGBApixel BMP::GetColor(int ColorNumber)
 	Output.Blue  = 255;
 	Output.Alpha = 0;
 
-	if ( BitDepth != 1 && BitDepth != 4 && BitDepth != 8 )
+	if ( BitDepth != 1 and BitDepth != 4 and BitDepth != 8 )
 	{
 		if ( EasyBMPwarnings )
 		{
@@ -259,7 +259,7 @@ BMP::BMP(BMP& Input)
 
 	// if there is a color table, get all the colors
 
-	if (BitDepth == 1 || BitDepth == 4 || BitDepth == 8)
+	if (BitDepth == 1 or BitDepth == 4 or BitDepth == 8)
 	{
 		for (int k = 0; k < TellNumberOfColors() ; k++)
 		{
@@ -293,7 +293,7 @@ RGBApixel& BMP::operator()(int i, int j)
 	if (j < 0 )	     { j = 0; Warn = true; }
 	if (i >= Width)  { i = Width - 1; Warn = true; }
 	if (j >= Height) { j = Height - 1; Warn = true; }
-	if (Warn && EasyBMPwarnings)
+	if (Warn and EasyBMPwarnings)
 	{
 		cout << "EasyBMP Warning: Attempted to access non-existent pixel;" << endl
 		 	 << "                 Truncating request to fit in the range [0,"
@@ -321,9 +321,9 @@ int BMP::TellNumberOfColors(void)
 
 bool BMP::SetBitDepth(int NewDepth)
 {
-	if (NewDepth != 1 && NewDepth != 4 &&
-		NewDepth != 8 && NewDepth != 16 &&
-		NewDepth != 24 && NewDepth != 32)
+	if (NewDepth != 1 and NewDepth != 4 and
+		NewDepth != 8 and NewDepth != 16 and
+		NewDepth != 24 and NewDepth != 32)
 	{
 		if (EasyBMPwarnings) {
 			cout << "EasyBMP Warning: User attempted to set unsupported bit depth "
@@ -337,13 +337,13 @@ bool BMP::SetBitDepth(int NewDepth)
 	BitDepth = NewDepth;
 	delete [] Colors;
 	int NumberOfColors = IntPow(2, BitDepth);
-	if (BitDepth == 1 || BitDepth == 4 || BitDepth == 8) {
+	if (BitDepth == 1 or BitDepth == 4 or BitDepth == 8) {
 		Colors = new RGBApixel [NumberOfColors];
 	}
 	else {
 		Colors = nullptr;
 	}
-	if (BitDepth == 1 || BitDepth == 4 || BitDepth == 8) {
+	if (BitDepth == 1 or BitDepth == 4 or BitDepth == 8) {
 		CreateStandardColorTable();
 	}
 	
@@ -352,7 +352,7 @@ bool BMP::SetBitDepth(int NewDepth)
 
 bool BMP::SetSize(int NewWidth , int NewHeight )
 {
-	if (NewWidth <= 0 || NewHeight <= 0)
+	if (NewWidth <= 0 or NewHeight <= 0)
 	{
 		if (EasyBMPwarnings)
 		{
@@ -426,7 +426,7 @@ bool BMP::WriteToFile(const string& FileName)
 	double dTotalPixelBytes = Height * dActualBytesPerRow;
 
 	double dPaletteSize = 0;
-	if (BitDepth == 1 || BitDepth == 4 || BitDepth == 8) {
+	if (BitDepth == 1 or BitDepth == 4 or BitDepth == 8) {
 		dPaletteSize = IntPow(2,BitDepth)*4.0;
 	}
 
@@ -487,7 +487,7 @@ bool BMP::WriteToFile(const string& FileName)
 	fwrite( (char*) &(bmih.biClrImportant), sizeof(ebmpDWORD), 1, fp);
 
 	// write the palette
-	if (BitDepth == 1 || BitDepth == 4 || BitDepth == 8) {
+	if (BitDepth == 1 or BitDepth == 4 or BitDepth == 8) {
 		int NumberOfColors = IntPow(2,BitDepth);
 
 		// if there is no palette, create one
@@ -625,8 +625,8 @@ bool BMP::ReadFromFile(const string& FileName)
 
 	bool IsBitmap = false;
 
-	if (IsBigEndian()     && bmfh.bfType == 16973) IsBitmap = true;
-	if (not IsBigEndian() && bmfh.bfType == 19778) IsBitmap = true;
+	if (IsBigEndian()     and bmfh.bfType == 16973) IsBitmap = true;
+	if (not IsBigEndian() and bmfh.bfType == 19778) IsBitmap = true;
 
 	if (!IsBitmap) {
 		if (EasyBMPwarnings) {
@@ -683,7 +683,7 @@ bool BMP::ReadFromFile(const string& FileName)
 
 	// if bmih.biCompression 1 or 2, then the file is RLE compressed
 
-	if (bmih.biCompression == 1 || bmih.biCompression == 2) {
+	if (bmih.biCompression == 1 or bmih.biCompression == 2) {
 		if (EasyBMPwarnings) {
 			cout << "EasyBMP Error: " << FileName << " is (RLE) compressed." << endl
 				 << "               EasyBMP does not support compression." << endl;
@@ -712,7 +712,7 @@ bool BMP::ReadFromFile(const string& FileName)
 		return false;
 	}
 
-	if (bmih.biCompression == 3 && bmih.biBitCount != 16) {
+	if (bmih.biCompression == 3 and bmih.biBitCount != 16) {
 		if (EasyBMPwarnings) {
 			cout << "EasyBMP Error: " << FileName
 				 << " uses bit fields and is not a" << endl
@@ -727,9 +727,9 @@ bool BMP::ReadFromFile(const string& FileName)
 	// set the bit depth
 
 	int TempBitDepth = (int) bmih.biBitCount;
-	if (   TempBitDepth != 1  && TempBitDepth != 4
-		&& TempBitDepth != 8  && TempBitDepth != 16
-		&& TempBitDepth != 24 && TempBitDepth != 32)
+	if (   TempBitDepth != 1  and TempBitDepth != 4
+		and TempBitDepth != 8  and TempBitDepth != 16
+		and TempBitDepth != 24 and TempBitDepth != 32)
 	{
 		if (EasyBMPwarnings) {
 			cout << "EasyBMP Error: " << FileName << " has unrecognized bit depth." << endl;
@@ -743,7 +743,7 @@ bool BMP::ReadFromFile(const string& FileName)
 
 	// set the size
 
-	if ((int) bmih.biWidth <= 0 || (int) bmih.biHeight <= 0) {
+	if ((int) bmih.biWidth <= 0 or (int) bmih.biHeight <= 0) {
 		if (EasyBMPwarnings) {
 			cout << "EasyBMP Error: " << FileName
 				 << " has a non-positive width or height." << endl;
@@ -801,9 +801,9 @@ bool BMP::ReadFromFile(const string& FileName)
 
 	int BytesToSkip = bmfh.bfOffBits - 54;;
 	if (BitDepth < 16) BytesToSkip -= 4*IntPow(2,BitDepth);
-	if (BitDepth == 16 && bmih.biCompression == 3) BytesToSkip -= 3*4;
+	if (BitDepth == 16 and bmih.biCompression == 3) BytesToSkip -= 3*4;
 	if (BytesToSkip < 0 ) BytesToSkip = 0;
-	if (BytesToSkip > 0 && BitDepth != 16) {
+	if (BytesToSkip > 0 and BitDepth != 16) {
 		if (EasyBMPwarnings) {
 			cout << "EasyBMP Warning: Extra meta data detected in file " << FileName << endl
 				 << "                 Data will be skipped." << endl;
@@ -951,7 +951,7 @@ bool BMP::ReadFromFile(const string& FileName)
 
 bool BMP::CreateStandardColorTable( void )
 {
-	if (BitDepth != 1 && BitDepth != 4 && BitDepth != 8) {
+	if (BitDepth != 1 and BitDepth != 4 and BitDepth != 8) {
 		if (EasyBMPwarnings) {
 			cout << "EasyBMP Warning: Attempted to create color table at a bit" << endl
 				 << "                 depth that does not require a color table." << endl
@@ -1266,8 +1266,8 @@ void PixelToPixelCopyTransparent(BMP& From, int FromX, int FromY,
                                  BMP& To, int ToX, int ToY,
                                  RGBApixel& Transparent)
 {
-	if (From(FromX,FromY).Red != Transparent.Red ||
-		From(FromX,FromY).Green != Transparent.Green ||
+	if (From(FromX,FromY).Red != Transparent.Red or
+		From(FromX,FromY).Green != Transparent.Green or
 		From(FromX,FromY).Blue != Transparent.Blue)
 	{
 		To(ToX,ToY) = From(FromX,FromY);
@@ -1331,7 +1331,7 @@ void RangedPixelToPixelCopyTransparent(
 bool CreateGrayscaleColorTable( BMP& InputImage )
 {
 	int BitDepth = InputImage.TellBitDepth();
-	if (BitDepth != 1 && BitDepth != 4 && BitDepth != 8) {
+	if (BitDepth != 1 and BitDepth != 4 and BitDepth != 8) {
 		if (EasyBMPwarnings) {
 			cout << "EasyBMP Warning: Attempted to create color table at a bit" << endl
 				 << "                 depth that does not require a color table." << endl
@@ -1396,7 +1396,7 @@ bool BMP::Read4bitRow(ebmpBYTE* Buffer, int BufferSize, int Row)
 	if (Width > 2 * BufferSize) return false;
 	while (i < Width) {
 		j = 0;
-		while (j < 2 && i < Width) {
+		while (j < 2 and i < Width) {
 			int Index = (int) ((Buffer[k] & Masks[j]) >> Shifts[j]);
 			this->operator()(i, Row) = GetColor(Index);
 			i++; j++;
@@ -1418,7 +1418,7 @@ bool BMP::Read1bitRow(ebmpBYTE* Buffer, int BufferSize, int Row)
 	if (Width > 8 * BufferSize) return false;
 	while (i < Width) {
 		j = 0;
-		while (j < 8 && i < Width) {
+		while (j < 8 and i < Width) {
 			int Index = (int) ((Buffer[k] & Masks[j]) >> Shifts[j]);
 			this->operator()(i,Row) = GetColor(Index);
 			i++; j++;
@@ -1466,7 +1466,7 @@ bool BMP::Write4bitRow(ebmpBYTE* Buffer, int BufferSize, int Row)
 	while (i < Width) {
 		j = 0;
 		int Index = 0;
-		while (j < 2 && i < Width) {
+		while (j < 2 and i < Width) {
 			Index += (PositionWeights[j] * (int) FindClosestColor(Pixels[i][Row]));
 			i++; j++;
 		}
@@ -1487,7 +1487,7 @@ bool BMP::Write1bitRow(ebmpBYTE* Buffer, int BufferSize, int Row)
 	while (i < Width) {
 		j = 0;
 		int Index = 0;
-		while (j < 8 && i < Width) {
+		while (j < 8 and i < Width) {
 			Index += (PositionWeights[j] * (int) FindClosestColor( Pixels[i][Row] ));
 			i++; j++;
 		}
@@ -1555,9 +1555,9 @@ bool Rescale(BMP& InputImage, char mode, int NewDimension)
 
 	BMP OldImage(InputImage);
 
-	if (CapMode != 'P' &&
-		CapMode != 'W' &&
-		CapMode != 'H' &&
+	if (CapMode != 'P' and
+		CapMode != 'W' and
+		CapMode != 'H' and
 		CapMode != 'F')
 	{
 		if (EasyBMPwarnings) {
