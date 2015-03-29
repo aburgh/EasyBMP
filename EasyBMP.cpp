@@ -403,7 +403,7 @@ bool BMP::SetSize(int NewWidth , int NewHeight )
 	return true;
 }
 
-bool BMP::WriteToFile( const char* FileName )
+bool BMP::WriteToFile(const string& FileName )
 {
 	if (not EasyBMPcheckDataSize()) {
 		if (EasyBMPwarnings) {
@@ -416,8 +416,8 @@ bool BMP::WriteToFile( const char* FileName )
 		return false;
 	}
 
-	FILE* fp = fopen( FileName, "wb" );
-	if ( fp == nullptr ) {
+	FILE* fp = fopen(FileName.c_str(), "wb" );
+	if (not fp) {
 		if (EasyBMPwarnings) {
 			cout << "EasyBMP Error: Cannot open file "
 				 << FileName << " for output." << endl;
@@ -606,7 +606,7 @@ bool BMP::WriteToFile( const char* FileName )
 	return true;
 }
 
-bool BMP::ReadFromFile(const char* FileName)
+bool BMP::ReadFromFile(const string& FileName)
 {
 	if (!EasyBMPcheckDataSize()) {
 		if (EasyBMPwarnings) {
@@ -619,8 +619,8 @@ bool BMP::ReadFromFile(const char* FileName)
 		return false;
 	}
 
-	FILE* fp = fopen(FileName, "rb");
-	if (fp == nullptr) {
+	FILE* fp = fopen(FileName.c_str(), "rb");
+	if (not fp) {
 		if (EasyBMPwarnings) {
 			cout << "EasyBMP Error: Cannot open file "
 				 << FileName << " for input." << endl;
@@ -884,7 +884,7 @@ bool BMP::ReadFromFile(const char* FileName)
 			// read the three bit masks
 
 			ebmpWORD TempMaskWORD;
-			ebmpWORD ZeroWORD;
+			//ebmpWORD ZeroWORD;
 
 			SafeFread((char*) &RedMask, 2, 1, fp );
 			if (IsBigEndian()) RedMask = FlipWORD(RedMask);
@@ -1146,12 +1146,12 @@ int BMP::TellHorizontalDPI( void )
 
 /* These functions are defined in EasyBMP_VariousBMPutilities.h */
 
-BMFH GetBMFH(const char* szFileNameIn)
+BMFH GetBMFH(const string& szFileNameIn)
 {
 	BMFH bmfh;
 
 	FILE* fp;
-	fp = fopen(szFileNameIn, "rb");
+	fp = fopen(szFileNameIn.c_str(), "rb");
 
 	if (not fp) {
 		if (EasyBMPwarnings) {
@@ -1177,12 +1177,12 @@ BMFH GetBMFH(const char* szFileNameIn)
 	return bmfh;
 }
 
-BMIH GetBMIH(const char* szFileNameIn)
+BMIH GetBMIH(const string& szFileNameIn)
 {
 	BMFH bmfh;
 	BMIH bmih;
 
-	FILE* fp = fopen(szFileNameIn, "rb");
+	FILE* fp = fopen(szFileNameIn.c_str(), "rb");
 	if (not fp) {
 		if (EasyBMPwarnings)  {
 			cout << "EasyBMP Error: Cannot initialize from file "
@@ -1196,7 +1196,7 @@ BMIH GetBMIH(const char* szFileNameIn)
 	// read the bmfh, i.e., first 14 bytes (just to get it out of the way);
 
 	ebmpBYTE TempBYTE;
-	for (int i = 14; i > 0; i-- ) SafeFread((char*) &TempBYTE, sizeof(ebmpBYTE), 1, fp);
+	for (int i = 14; i > 0; i--) SafeFread((char*) &TempBYTE, sizeof(ebmpBYTE), 1, fp);
 
 	// read the bmih
 
@@ -1221,9 +1221,9 @@ BMIH GetBMIH(const char* szFileNameIn)
 	return bmih;
 }
 
-void DisplayBitmapInfo(const char* szFileNameIn)
+void DisplayBitmapInfo(const string& szFileNameIn)
 {
-	FILE* fp = fopen(szFileNameIn,"rb");
+	FILE* fp = fopen(szFileNameIn.c_str(),"rb");
 	if (not fp) {
 		if (EasyBMPwarnings) {
 			cout << "EasyBMP Error: Cannot initialize from file "
@@ -1264,7 +1264,7 @@ void DisplayBitmapInfo(const char* szFileNameIn)
 		 << "biClrImportant: " << bmih.biClrImportant << endl << endl;
 }
 
-int GetBitmapColorDepth(const char* szFileNameIn)
+int GetBitmapColorDepth(const string& szFileNameIn)
 {
 	BMIH bmih = GetBMIH(szFileNameIn);
 	return (int) bmih.biBitCount;
