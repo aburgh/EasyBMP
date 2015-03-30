@@ -84,6 +84,9 @@ public:
 
 	RGBApixel GetColor(int ColorNumber);
 	bool SetColor(int ColorNumber, RGBApixel NewColor);
+
+	static bool exceptions(void);
+	static void exceptions(bool flag);
 };
 
 #endif

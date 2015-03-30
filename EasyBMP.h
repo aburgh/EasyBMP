@@ -75,12 +75,4 @@
 #define _EasyBMP_Version_String_ "1.06"
 #endif
 
-#ifndef _EasyBMPwarnings_
-#define _EasyBMPwarnings_
-#endif
-
-void SetEasyBMPwarningsOff( void );
-void SetEasyBMPwarningsOn( void );
-bool GetEasyBMPwarningState( void );
-
 #endif

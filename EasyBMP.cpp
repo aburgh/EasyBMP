@@ -19,16 +19,16 @@
 *************************************************/
 
 #include "EasyBMP.h"
+#include <exception>
 
 using namespace std;
 
 /* These functions are defined in EasyBMP.h */
 
-bool EasyBMPwarnings = true;
+static bool g_exceptions = true;
 
-void SetEasyBMPwarningsOff(void)  { EasyBMPwarnings = false; }
-void SetEasyBMPwarningsOn(void)   { EasyBMPwarnings = true; }
-bool GetEasyBMPwarningState(void) { return EasyBMPwarnings; }
+bool BMP::exceptions(void)       { return g_exceptions; }
+void BMP::exceptions(bool flag)  { g_exceptions = flag; }
 
 /* These functions are defined in EasyBMP_DataStructures.h */
 
@@ -110,16 +110,13 @@ void BMFH::display(void)
 
 RGBApixel BMP::GetPixel(int i, int j) const
 {
-	bool Warn = false;
-	if (i < 0) { i = 0; Warn = true; }
-	if (j < 0) { j = 0; Warn = true; }
-	if (i >= Width)  { i = Width - 1; Warn = true; }
-	if (j >= Height) { j = Height - 1; Warn = true; }
-	if (Warn and EasyBMPwarnings)
-	{
-		cout << "EasyBMP Warning: Attempted to access non-existent pixel;" << endl
-			 << "                 Truncating request to fit in the range [0,"
-			 << Width - 1 << "] x [0," << Height - 1 << "]." << endl;
+	bool err = false;
+	if (i < 0) { i = 0; err = true; }
+	if (j < 0) { j = 0; err = true; }
+	if (i >= Width)  { i = Width - 1; err = true; }
+	if (j >= Height) { j = Height - 1; err = true; }
+	if (err and g_exceptions) {
+		throw invalid_argument("EasyBMP: attempted to access non-existent pixel");
 	}
 	return Pixels[i][j];
 }
@@ -135,30 +132,20 @@ bool BMP::SetColor( int ColorNumber , RGBApixel NewColor )
 {
 	if ( BitDepth != 1 and BitDepth != 4 and BitDepth != 8 )
 	{
-		if ( EasyBMPwarnings )
-		{
-			cout << "EasyBMP Warning: Attempted to change color table for a BMP object" << endl
-				 << "                 that lacks a color table. Ignoring request." << endl;
+		if (g_exceptions) throw invalid_argument("EasyBMP: attempted to change color table for a BMP object that lacks a color table.");
+		return false;
+	}
+	if (not Colors)	{
+		if (g_exceptions) {
+			throw invalid_argument("EasyBMP: attempted to set a color, but the color table is not defined.");
 		}
 		return false;
 	}
-	if ( !Colors )
-	{
-		if ( EasyBMPwarnings )
-		{
-			cout << "EasyBMP Warning: Attempted to set a color, but the color table" << endl
-				 << "                 is not defined. Ignoring request." << endl;
-		}
-		return false;
-	}
-	if ( ColorNumber >= TellNumberOfColors() )
-	{
-		if ( EasyBMPwarnings )
-		{
-			cout << "EasyBMP Warning: Requested color number "
-				 << ColorNumber << " is outside the allowed" << endl
-				 << "                 range [0," << TellNumberOfColors()-1
-				 << "]. Ignoring request to set this color." << endl;
+	if (ColorNumber >= TellNumberOfColors()) {
+		if (g_exceptions) {
+			throw invalid_argument(string("EasyBMP: requested color number ") + to_string(ColorNumber) +
+								   " is outside the allowed range [0," + to_string(TellNumberOfColors()-1) +
+								   "]. Ignoring request to set this color.");
 		}
 		return false;
 	}
@@ -177,30 +164,21 @@ RGBApixel BMP::GetColor(int ColorNumber)
 
 	if ( BitDepth != 1 and BitDepth != 4 and BitDepth != 8 )
 	{
-		if ( EasyBMPwarnings )
-		{
-			cout << "EasyBMP Warning: Attempted to access color table for a BMP object" << endl
-				 << "                 that lacks a color table. Ignoring request." << endl;
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP: attempted to access color table for a BMP object that lacks a color table.");
 		}
 		return Output;
 	}
-	if ( !Colors )
-	{
-		if ( EasyBMPwarnings )
-		{
-			cout << "EasyBMP Warning: Requested a color, but the color table" << endl
-				 << "                 is not defined. Ignoring request." << endl;
+	if (not Colors)	{
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP: requested a color, but the color table is not defined.");
 		}
 		return Output;
 	}
-	if ( ColorNumber >= TellNumberOfColors() )
-	{
-		if ( EasyBMPwarnings )
-		{
-			cout << "EasyBMP Warning: Requested color number "
-				 << ColorNumber << " is outside the allowed" << endl
-				 << "                 range [0," << TellNumberOfColors()-1
-				 << "]. Ignoring request to get this color." << endl;
+	if (ColorNumber >= TellNumberOfColors()) {
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP: requested color number " + to_string(ColorNumber) +
+								" is outside the allowed range [0," + to_string(TellNumberOfColors() - 1) + "].");
 		}
 		return Output;
 	}
@@ -293,11 +271,8 @@ RGBApixel& BMP::operator()(int i, int j)
 	if (j < 0 )	     { j = 0; Warn = true; }
 	if (i >= Width)  { i = Width - 1; Warn = true; }
 	if (j >= Height) { j = Height - 1; Warn = true; }
-	if (Warn and EasyBMPwarnings)
-	{
-		cout << "EasyBMP Warning: Attempted to access non-existent pixel;" << endl
-		 	 << "                 Truncating request to fit in the range [0,"
-			 << Width - 1 << "] x [0," << Height - 1 << "]." << endl;
+	if (Warn and g_exceptions) {
+		throw runtime_error("EasyBMP: attempted to access non-existent pixel");
 	}
 	return Pixels[i][j];
 }
@@ -325,11 +300,8 @@ bool BMP::SetBitDepth(int NewDepth)
 		NewDepth != 8 and NewDepth != 16 and
 		NewDepth != 24 and NewDepth != 32)
 	{
-		if (EasyBMPwarnings) {
-			cout << "EasyBMP Warning: User attempted to set unsupported bit depth "
-				 << NewDepth << "." << endl
-				 << "                 Bit depth remains unchanged at "
-				 << BitDepth << "." << endl;
+		if (g_exceptions) {
+			throw invalid_argument("EasyBMP::SetBitDepth: unsupported bit depth " + to_string(NewDepth));
 		}
 		return false;
 	}
@@ -354,11 +326,8 @@ bool BMP::SetSize(int NewWidth , int NewHeight )
 {
 	if (NewWidth <= 0 or NewHeight <= 0)
 	{
-		if (EasyBMPwarnings)
-		{
-			cout << "EasyBMP Warning: User attempted to set a non-positive width or height." << endl
-				 << "                 Size remains unchanged at "
-				 << Width << " x " << Height << "." << endl;
+		if (g_exceptions) {
+			throw invalid_argument("EasyBMP::SetSize: negative width or height");
 		}
 		return false;
 	}
@@ -392,21 +361,18 @@ bool BMP::SetSize(int NewWidth , int NewHeight )
 bool BMP::WriteToFile(const string& FileName)
 {
 	if (not EasyBMPcheckDataSize()) {
-		if (EasyBMPwarnings) {
-			cout << "EasyBMP Error: Data types are wrong size!" << endl
-				 << "               You may need to mess with EasyBMP_DataTypes.h" << endl
-				 << "               to fix these errors, and then recompile." << endl
-				 << "               All 32-bit and 64-bit machines should be" << endl
-				 << "               supported, however." << endl << endl;
+		if (g_exceptions) {
+			throw runtime_error(string("EasyBMP::WriteToFile: data types are wrong size! ") +
+								"You may need to mess with EasyBMP_DataTypes.h to fix these errors, and then recompile. " +
+								"All 32-bit and 64-bit machines should be supported, however.");
 		}
 		return false;
 	}
 
 	FILE* fp = fopen(FileName.c_str(), "wb");
 	if (not fp) {
-		if (EasyBMPwarnings) {
-			cout << "EasyBMP Error: Cannot open file "
-				 << FileName << " for output." << endl;
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::WriteToFile: cannot open file " + FileName + " for output.");
 		}
 		return false;
 	}
@@ -524,8 +490,9 @@ bool BMP::WriteToFile(const string& FileName)
 				if ( BytesWritten != BufferSize ) Success = false;
 			}
 			if (!Success) {
-				if (EasyBMPwarnings) {
-					cout << "EasyBMP Error: Could not write proper amount of data." << endl;
+				if (g_exceptions) {
+					delete [] Buffer;
+					throw runtime_error("EasyBMP::WriteToFile: could not write proper amount of data.");
 				}
 				j = -1;
 			}
@@ -595,21 +562,18 @@ bool BMP::WriteToFile(const string& FileName)
 bool BMP::ReadFromFile(const string& FileName)
 {
 	if (!EasyBMPcheckDataSize()) {
-		if (EasyBMPwarnings) {
-			cout << "EasyBMP Error: Data types are wrong size!" << endl
-				 << "               You may need to mess with EasyBMP_DataTypes.h" << endl
-				 << "               to fix these errors, and then recompile." << endl
-				 << "               All 32-bit and 64-bit machines should be" << endl
-				 << "               supported, however." << endl << endl;
+		if (g_exceptions) {
+			throw runtime_error(string("EasyBMP::ReadFromFile: Data types are wrong size! ") +
+								"You may need to mess with EasyBMP_DataTypes.h to fix these errors, and then recompile. " +
+								"All 32-bit and 64-bit machines should be supported, however.");
 		}
 		return false;
 	}
 
 	FILE* fp = fopen(FileName.c_str(), "rb");
 	if (not fp) {
-		if (EasyBMPwarnings) {
-			cout << "EasyBMP Error: Cannot open file "
-				 << FileName << " for input." << endl;
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::ReadFromFile: cannot open file " + FileName + " for input.");
 		}
 		SetBitDepth(1);
 		SetSize(1, 1);
@@ -629,9 +593,8 @@ bool BMP::ReadFromFile(const string& FileName)
 	if (not IsBigEndian() and bmfh.bfType == 19778) IsBitmap = true;
 
 	if (!IsBitmap) {
-		if (EasyBMPwarnings) {
-			cout << "EasyBMP Error: " << FileName
-				 << " is not a Windows BMP file!" << endl;
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::ReadFromFile: " + FileName + " is not a Windows BMP file");
 		}
 		fclose(fp);
 		return false;
@@ -642,8 +605,7 @@ bool BMP::ReadFromFile(const string& FileName)
 	NotCorrupted &= SafeFread((char*) &(bmfh.bfReserved2), sizeof(ebmpWORD), 1, fp);
 	NotCorrupted &= SafeFread((char*) &(bmfh.bfOffBits), sizeof(ebmpDWORD), 1, fp);
 
-	if ( IsBigEndian() )
-	{ bmfh.SwitchEndianess(); }
+	if (IsBigEndian()) bmfh.SwitchEndianess();
 
 	// read the info header
 
@@ -668,9 +630,8 @@ bool BMP::ReadFromFile(const string& FileName)
 	// future idea: check to see if at least most is self-consistent
 
 	if (not NotCorrupted) {
-		if (EasyBMPwarnings) {
-			cout << "EasyBMP Error: " << FileName
-				 << " is obviously corrupted." << endl;
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::ReadFromFile: " + FileName + " is obviously corrupted");
 		}
 		SetSize(1, 1);
 		SetBitDepth(1);
@@ -684,9 +645,9 @@ bool BMP::ReadFromFile(const string& FileName)
 	// if bmih.biCompression 1 or 2, then the file is RLE compressed
 
 	if (bmih.biCompression == 1 or bmih.biCompression == 2) {
-		if (EasyBMPwarnings) {
-			cout << "EasyBMP Error: " << FileName << " is (RLE) compressed." << endl
-				 << "               EasyBMP does not support compression." << endl;
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::ReadFromFile: " + FileName + " is (RLE) compressed. " +
+								"EasyBMP does not support compression.");
 		}
 		SetSize(1, 1);
 		SetBitDepth(1);
@@ -698,13 +659,10 @@ bool BMP::ReadFromFile(const string& FileName)
 	// it's probably an OS2 bitmap file.
 
 	if (bmih.biCompression > 3) {
-		if (EasyBMPwarnings) {
-			cout << "EasyBMP Error: " << FileName << " is in an unsupported format."
-				 << endl
-				 << "               (bmih.biCompression = "
-				 << bmih.biCompression << ")" << endl
-				 << "               The file is probably an old OS2 bitmap or corrupted."
-				 << endl;
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::ReadFromFile: " + FileName + " is in an unsupported format." +
+								"(bmih.biCompression = " + to_string(bmih.biCompression) + "). " +
+								"The file may be an old OS2 bitmap or corrupted.");
 		}
 		SetSize(1, 1);
 		SetBitDepth(1);
@@ -713,10 +671,9 @@ bool BMP::ReadFromFile(const string& FileName)
 	}
 
 	if (bmih.biCompression == 3 and bmih.biBitCount != 16) {
-		if (EasyBMPwarnings) {
-			cout << "EasyBMP Error: " << FileName
-				 << " uses bit fields and is not a" << endl
-				 << "               16-bit file. This is not supported." << endl;
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::ReadFromFile: " + FileName +
+								" uses bit fields and is not a 16-bit file. This is not supported.");
 		}
 		SetSize(1, 1);
 		SetBitDepth(1);
@@ -727,12 +684,11 @@ bool BMP::ReadFromFile(const string& FileName)
 	// set the bit depth
 
 	int TempBitDepth = (int) bmih.biBitCount;
-	if (   TempBitDepth != 1  and TempBitDepth != 4
-		and TempBitDepth != 8  and TempBitDepth != 16
-		and TempBitDepth != 24 and TempBitDepth != 32)
+	if (TempBitDepth != 1  and TempBitDepth != 4  and TempBitDepth != 8 and
+		TempBitDepth != 16 and TempBitDepth != 24 and TempBitDepth != 32)
 	{
-		if (EasyBMPwarnings) {
-			cout << "EasyBMP Error: " << FileName << " has unrecognized bit depth." << endl;
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::ReadFromFile: " + FileName + " has unrecognized bit depth.");
 		}
 		SetSize(1, 1);
 		SetBitDepth(1);
@@ -744,9 +700,8 @@ bool BMP::ReadFromFile(const string& FileName)
 	// set the size
 
 	if ((int) bmih.biWidth <= 0 or (int) bmih.biHeight <= 0) {
-		if (EasyBMPwarnings) {
-			cout << "EasyBMP Error: " << FileName
-				 << " has a non-positive width or height." << endl;
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::ReadFromFile: " + FileName + " has a non-positive width or height.");
 		}
 		SetSize(1, 1);
 		SetBitDepth(1);
@@ -774,10 +729,9 @@ bool BMP::ReadFromFile(const string& FileName)
 		if (NumberOfColorsToRead > IntPow(2, BitDepth)) NumberOfColorsToRead = IntPow(2, BitDepth);
 
 		if (NumberOfColorsToRead < TellNumberOfColors()) {
-			if (EasyBMPwarnings) {
-				cout << "EasyBMP Warning: file " << FileName << " has an underspecified" << endl
-					 << "                 color table. The table will be padded with extra" << endl
-					 << "                 white (255,255,255,0) entries." << endl;
+			if (g_exceptions) {
+				throw runtime_error("EasyBMP::ReadFromFile: file " + FileName + " has an underspecified color table");
+				// "The table will be padded with extrad white (255,255,255,0) entries."
 			}
 		}
 
@@ -804,9 +758,9 @@ bool BMP::ReadFromFile(const string& FileName)
 	if (BitDepth == 16 and bmih.biCompression == 3) BytesToSkip -= 3*4;
 	if (BytesToSkip < 0 ) BytesToSkip = 0;
 	if (BytesToSkip > 0 and BitDepth != 16) {
-		if (EasyBMPwarnings) {
-			cout << "EasyBMP Warning: Extra meta data detected in file " << FileName << endl
-				 << "                 Data will be skipped." << endl;
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::ReadFromFile: extra meta data detected in file " + FileName);
+			// " Data will be skipped."
 		}
 		ebmpBYTE* TempSkipBYTE;
 		TempSkipBYTE = new ebmpBYTE[BytesToSkip];
@@ -829,8 +783,8 @@ bool BMP::ReadFromFile(const string& FileName)
 			int BytesRead = (int) fread((char*) Buffer, 1, BufferSize, fp);
 			if (BytesRead < BufferSize) {
 				j = -1;
-				if (EasyBMPwarnings) {
-					cout << "EasyBMP Error: Could not read proper amount of data." << endl;
+				if (g_exceptions) {
+					throw runtime_error("EasyBMP::ReadFromFile: could not read proper amount of data.");
 				}
 			}
 			else {
@@ -841,8 +795,8 @@ bool BMP::ReadFromFile(const string& FileName)
 				if (BitDepth == 24) Success = Read24bitRow(Buffer, BufferSize, j);
 				if (BitDepth == 32) Success = Read32bitRow(Buffer, BufferSize, j);
 				if (not Success) {
-					if (EasyBMPwarnings) {
-						cout << "EasyBMP Error: Could not read enough pixel data!" << endl;
+					if (g_exceptions) {
+						throw runtime_error("EasyBMP::ReadFromFile: could not read enough pixel data.");
 					}
 					j = -1;
 				}
@@ -888,10 +842,8 @@ bool BMP::ReadFromFile(const string& FileName)
 		// read and skip any meta data
 
 		if (BytesToSkip > 0) {
-			if (EasyBMPwarnings) {
-				cout << "EasyBMP Warning: Extra meta data detected in file "
-					 << FileName << endl
-					 << "                 Data will be skipped." << endl;
+			if (g_exceptions) {
+				throw runtime_error("EasyBMP::ReadFromFile: extra meta data detected in file " + FileName);
 			}
 			ebmpBYTE* TempSkipBYTE;
 			TempSkipBYTE = new ebmpBYTE[BytesToSkip];
@@ -952,10 +904,9 @@ bool BMP::ReadFromFile(const string& FileName)
 bool BMP::CreateStandardColorTable( void )
 {
 	if (BitDepth != 1 and BitDepth != 4 and BitDepth != 8) {
-		if (EasyBMPwarnings) {
-			cout << "EasyBMP Warning: Attempted to create color table at a bit" << endl
-				 << "                 depth that does not require a color table." << endl
-				 << "                 Ignoring request." << endl;
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP: attempted to create color table at a bit depth "
+								"that does not require a color table.");
 		}
 		return false;
 	}
@@ -1140,11 +1091,9 @@ BMFH GetBMFH(const string& szFileNameIn)
 	fp = fopen(szFileNameIn.c_str(), "rb");
 
 	if (not fp) {
-		if (EasyBMPwarnings) {
-			cout << "EasyBMP Error: Cannot initialize from file "
-				 << szFileNameIn << "." << endl
-				 << "               File cannot be opened or does not exist."
-				 << endl;
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::GetBMFH: cannot initialize from file " + szFileNameIn + ". " +
+								"File cannot be opened or does not exist.");
 		}
 		bmfh.bfType = 0;
 		return bmfh;
@@ -1170,11 +1119,9 @@ BMIH GetBMIH(const string& szFileNameIn)
 
 	FILE* fp = fopen(szFileNameIn.c_str(), "rb");
 	if (not fp) {
-		if (EasyBMPwarnings)  {
-			cout << "EasyBMP Error: Cannot initialize from file "
-				 << szFileNameIn << "." << endl
-				 << "               File cannot be opened or does not exist."
-				 << endl;
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::GetBMIH: cannot initialize from file " + szFileNameIn + ". "
+								"File cannot be opened or does not exist.");
 		}
 		return bmih;
 	}
@@ -1211,11 +1158,9 @@ void DisplayBitmapInfo(const string& szFileNameIn)
 {
 	FILE* fp = fopen(szFileNameIn.c_str(),"rb");
 	if (not fp) {
-		if (EasyBMPwarnings) {
-			cout << "EasyBMP Error: Cannot initialize from file "
-				 << szFileNameIn << "." << endl
-				 << "               File cannot be opened or does not exist."
-				 << endl;
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::DisplayBitmapInfo: cannot initialize from file " + szFileNameIn + ". "
+								"File cannot be opened or does not exist.");
 		}
 		return;
 	}
@@ -1332,10 +1277,8 @@ bool CreateGrayscaleColorTable( BMP& InputImage )
 {
 	int BitDepth = InputImage.TellBitDepth();
 	if (BitDepth != 1 and BitDepth != 4 and BitDepth != 8) {
-		if (EasyBMPwarnings) {
-			cout << "EasyBMP Warning: Attempted to create color table at a bit" << endl
-				 << "                 depth that does not require a color table." << endl
-				 << "                 Ignoring request." << endl;
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP: attempted to create color table at a bit depth that does not require a color table.");
 		}
 		return false;
 	}
@@ -1523,26 +1466,23 @@ bool EasyBMPcheckDataSize(void)
 {
 	bool ReturnValue = true;
 	if (sizeof(ebmpBYTE) != 1) {
-		if (EasyBMPwarnings) {
-			cout << "EasyBMP Error: ebmpBYTE has the wrong size ("
-				 << sizeof( ebmpBYTE ) << " bytes)," << endl
-				 << "               Compared to the expected 1 byte value" << endl;
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::EasyBMPcheckDataSize: ebmpBYTE has the wrong size (" + to_string(sizeof(ebmpBYTE)) +
+								" bytes), compared to the expected 1 byte value");
 		}
 		ReturnValue = false;
 	}
 	if (sizeof(ebmpWORD) != 2) {
-		if (EasyBMPwarnings) {
-			cout << "EasyBMP Error: ebmpWORD has the wrong size ("
-				 << sizeof( ebmpWORD ) << " bytes)," << endl
-				 << "               Compared to the expected 2 byte value" << endl;
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::EasyBMPcheckDataSize: ebmpWORD has the wrong size (" + to_string(sizeof(ebmpWORD)) +
+								" bytes), compared to the expected 2 byte value");
 		}
 		ReturnValue = false;
 	}
 	if (sizeof(ebmpDWORD) != 4) {
-		if (EasyBMPwarnings) {
-			cout << "EasyBMP Error: ebmpDWORD has the wrong size ("
-				 << sizeof( ebmpDWORD ) << " bytes)," << endl
-				 << "               Compared to the expected 4 byte value" << endl;
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::EasyBMPcheckDataSize: ebmpDWORD has the wrong size (" + to_string(sizeof(ebmpDWORD)) +
+								" bytes), compared to the expected 4 byte value");
 		}
 		ReturnValue = false;
 	}
@@ -1560,10 +1500,8 @@ bool Rescale(BMP& InputImage, char mode, int NewDimension)
 		CapMode != 'H' and
 		CapMode != 'F')
 	{
-		if (EasyBMPwarnings) {
-			char ErrorMessage [1024];
-			sprintf( ErrorMessage, "EasyBMP Error: Unknown rescale mode %c requested\n" , mode );
-			cout << ErrorMessage;
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::Rescale: unknown rescale mode " + to_string(mode) + " requested");
 		}
 		return false;
 	}
