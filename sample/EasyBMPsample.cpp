@@ -19,7 +19,11 @@
 *                                                *
 *************************************************/
 
+#include <fstream>
+#include <memory>
+#include <sys/stat.h>
 #include "EasyBMP.h"
+
 using namespace std;
 
 int main( int argc, char* argv[] )
@@ -33,7 +37,14 @@ int main( int argc, char* argv[] )
 	Text.ReadFromFile("EasyBMPtext.bmp");
 
 	BMP Background;
-	Background.ReadFromFile("EasyBMPbackground.bmp");
+	// Do extra work to read into a buffer to test ReadFromBuffer()
+	struct stat st;
+	stat("EasyBMPbackground.bmp", &st);
+	ifstream instream("EasyBMPbackground.bmp", ios::binary);
+	unique_ptr<ebmpBYTE> backgroundBuffer(new ebmpBYTE[st.st_size]);
+	instream.read((char*) backgroundBuffer.get(), st.st_size);
+	Background.ReadFromBuffer(backgroundBuffer.get(), st.st_size);
+//	Background.ReadFromFile("EasyBMPbackground.bmp");
 
 	BMP Output;
 	Output.SetSize( Background.TellWidth() , Background.TellHeight() );

@@ -20,6 +20,7 @@
 
 #include "EasyBMP.h"
 #include <exception>
+#include <fstream>
 
 using namespace std;
 
@@ -108,6 +109,24 @@ void BMFH::display(void)
 
 /* These functions are defined in EasyBMP_BMP.h */
 
+struct ReadBuf : public std::streambuf
+{
+	ReadBuf(char* s, std::size_t n)
+	{
+		setg(s, s, s + n);
+	}
+};
+
+bool SafeFread(char* buffer, int size, int number, istream& in)
+{
+	if (in.eof()) return false;
+	streamsize bytesRequested = size * number;
+	in.read(buffer, bytesRequested);
+
+	return in.gcount() == bytesRequested;
+}
+
+
 RGBApixel BMP::GetPixel(int i, int j) const
 {
 	bool err = false;
@@ -132,18 +151,18 @@ bool BMP::SetColor( int ColorNumber , RGBApixel NewColor )
 {
 	if ( BitDepth != 1 and BitDepth != 4 and BitDepth != 8 )
 	{
-		if (g_exceptions) throw invalid_argument("EasyBMP: attempted to change color table for a BMP object that lacks a color table.");
+		if (g_exceptions) throw invalid_argument("EasyBMP::SetColor: cannot change color table for a BMP object that lacks a color table.");
 		return false;
 	}
 	if (not Colors)	{
 		if (g_exceptions) {
-			throw invalid_argument("EasyBMP: attempted to set a color, but the color table is not defined.");
+			throw invalid_argument("EasyBMP::SetColor: the color table is not defined.");
 		}
 		return false;
 	}
 	if (ColorNumber >= TellNumberOfColors()) {
 		if (g_exceptions) {
-			throw invalid_argument(string("EasyBMP: requested color number ") + to_string(ColorNumber) +
+			throw invalid_argument(string("EasyBMP::SetColor: requested color number ") + to_string(ColorNumber) +
 								   " is outside the allowed range [0," + to_string(TellNumberOfColors()-1) +
 								   "]. Ignoring request to set this color.");
 		}
@@ -165,19 +184,19 @@ RGBApixel BMP::GetColor(int ColorNumber)
 	if ( BitDepth != 1 and BitDepth != 4 and BitDepth != 8 )
 	{
 		if (g_exceptions) {
-			throw runtime_error("EasyBMP: attempted to access color table for a BMP object that lacks a color table.");
+			throw runtime_error("EasyBMP::GetColor: image bit depth does not support having a color table.");
 		}
 		return Output;
 	}
 	if (not Colors)	{
 		if (g_exceptions) {
-			throw runtime_error("EasyBMP: requested a color, but the color table is not defined.");
+			throw runtime_error("EasyBMP::GetColor: no color table is defined.");
 		}
 		return Output;
 	}
 	if (ColorNumber >= TellNumberOfColors()) {
 		if (g_exceptions) {
-			throw runtime_error("EasyBMP: requested color number " + to_string(ColorNumber) +
+			throw runtime_error("EasyBMP::GetColor: requested color number " + to_string(ColorNumber) +
 								" is outside the allowed range [0," + to_string(TellNumberOfColors() - 1) + "].");
 		}
 		return Output;
@@ -272,7 +291,7 @@ RGBApixel& BMP::operator()(int i, int j)
 	if (i >= Width)  { i = Width - 1; Warn = true; }
 	if (j >= Height) { j = Height - 1; Warn = true; }
 	if (Warn and g_exceptions) {
-		throw runtime_error("EasyBMP: attempted to access non-existent pixel");
+		throw invalid_argument("EasyBMP: attempted to access non-existent pixel");
 	}
 	return Pixels[i][j];
 }
@@ -559,33 +578,14 @@ bool BMP::WriteToFile(const string& FileName)
 	return true;
 }
 
-bool BMP::ReadFromFile(const string& FileName)
+bool BMP::ReadFromStream(istream& in)
 {
-	if (!EasyBMPcheckDataSize()) {
-		if (g_exceptions) {
-			throw runtime_error(string("EasyBMP::ReadFromFile: Data types are wrong size! ") +
-								"You may need to mess with EasyBMP_DataTypes.h to fix these errors, and then recompile. " +
-								"All 32-bit and 64-bit machines should be supported, however.");
-		}
-		return false;
-	}
-
-	FILE* fp = fopen(FileName.c_str(), "rb");
-	if (not fp) {
-		if (g_exceptions) {
-			throw runtime_error("EasyBMP::ReadFromFile: cannot open file " + FileName + " for input.");
-		}
-		SetBitDepth(1);
-		SetSize(1, 1);
-		return false;
-	}
-
 	// read the file header
 
 	BMFH bmfh;
 	bool NotCorrupted = true;
 
-	NotCorrupted &= SafeFread((char*) &(bmfh.bfType), sizeof(ebmpWORD), 1, fp);
+	NotCorrupted &= SafeFread((char*) &(bmfh.bfType), sizeof(ebmpWORD), 1, in);
 
 	bool IsBitmap = false;
 
@@ -594,16 +594,15 @@ bool BMP::ReadFromFile(const string& FileName)
 
 	if (!IsBitmap) {
 		if (g_exceptions) {
-			throw runtime_error("EasyBMP::ReadFromFile: " + FileName + " is not a Windows BMP file");
+			throw runtime_error("EasyBMP::ReadFromStream: not a Windows BMP file");
 		}
-		fclose(fp);
 		return false;
 	}
 
-	NotCorrupted &= SafeFread((char*) &(bmfh.bfSize), sizeof(ebmpDWORD), 1, fp);
-	NotCorrupted &= SafeFread((char*) &(bmfh.bfReserved1), sizeof(ebmpWORD), 1, fp);
-	NotCorrupted &= SafeFread((char*) &(bmfh.bfReserved2), sizeof(ebmpWORD), 1, fp);
-	NotCorrupted &= SafeFread((char*) &(bmfh.bfOffBits), sizeof(ebmpDWORD), 1, fp);
+	NotCorrupted &= SafeFread((char*) &(bmfh.bfSize), sizeof(ebmpDWORD), 1, in);
+	NotCorrupted &= SafeFread((char*) &(bmfh.bfReserved1), sizeof(ebmpWORD), 1, in);
+	NotCorrupted &= SafeFread((char*) &(bmfh.bfReserved2), sizeof(ebmpWORD), 1, in);
+	NotCorrupted &= SafeFread((char*) &(bmfh.bfOffBits), sizeof(ebmpDWORD), 1, in);
 
 	if (IsBigEndian()) bmfh.SwitchEndianess();
 
@@ -611,18 +610,18 @@ bool BMP::ReadFromFile(const string& FileName)
 
 	BMIH bmih;
 
-	NotCorrupted &= SafeFread((char*) &(bmih.biSize), sizeof(ebmpDWORD), 1, fp);
-	NotCorrupted &= SafeFread((char*) &(bmih.biWidth), sizeof(ebmpDWORD), 1, fp);
-	NotCorrupted &= SafeFread((char*) &(bmih.biHeight), sizeof(ebmpDWORD), 1, fp);
-	NotCorrupted &= SafeFread((char*) &(bmih.biPlanes), sizeof(ebmpWORD), 1, fp);
-	NotCorrupted &= SafeFread((char*) &(bmih.biBitCount), sizeof(ebmpWORD), 1, fp);
+	NotCorrupted &= SafeFread((char*) &(bmih.biSize), sizeof(ebmpDWORD), 1, in);
+	NotCorrupted &= SafeFread((char*) &(bmih.biWidth), sizeof(ebmpDWORD), 1, in);
+	NotCorrupted &= SafeFread((char*) &(bmih.biHeight), sizeof(ebmpDWORD), 1, in);
+	NotCorrupted &= SafeFread((char*) &(bmih.biPlanes), sizeof(ebmpWORD), 1, in);
+	NotCorrupted &= SafeFread((char*) &(bmih.biBitCount), sizeof(ebmpWORD), 1, in);
 
-	NotCorrupted &= SafeFread((char*) &(bmih.biCompression), sizeof(ebmpDWORD), 1, fp);
-	NotCorrupted &= SafeFread((char*) &(bmih.biSizeImage), sizeof(ebmpDWORD), 1, fp);
-	NotCorrupted &= SafeFread((char*) &(bmih.biXPelsPerMeter), sizeof(ebmpDWORD), 1, fp);
-	NotCorrupted &= SafeFread((char*) &(bmih.biYPelsPerMeter), sizeof(ebmpDWORD), 1, fp);
-	NotCorrupted &= SafeFread((char*) &(bmih.biClrUsed), sizeof(ebmpDWORD), 1, fp);
-	NotCorrupted &= SafeFread((char*) &(bmih.biClrImportant), sizeof(ebmpDWORD), 1, fp);
+	NotCorrupted &= SafeFread((char*) &(bmih.biCompression), sizeof(ebmpDWORD), 1, in);
+	NotCorrupted &= SafeFread((char*) &(bmih.biSizeImage), sizeof(ebmpDWORD), 1, in);
+	NotCorrupted &= SafeFread((char*) &(bmih.biXPelsPerMeter), sizeof(ebmpDWORD), 1, in);
+	NotCorrupted &= SafeFread((char*) &(bmih.biYPelsPerMeter), sizeof(ebmpDWORD), 1, in);
+	NotCorrupted &= SafeFread((char*) &(bmih.biClrUsed), sizeof(ebmpDWORD), 1, in);
+	NotCorrupted &= SafeFread((char*) &(bmih.biClrImportant), sizeof(ebmpDWORD), 1, in);
 
 	if (IsBigEndian()) bmih.SwitchEndianess();
 
@@ -630,12 +629,11 @@ bool BMP::ReadFromFile(const string& FileName)
 	// future idea: check to see if at least most is self-consistent
 
 	if (not NotCorrupted) {
-		if (g_exceptions) {
-			throw runtime_error("EasyBMP::ReadFromFile: " + FileName + " is obviously corrupted");
-		}
 		SetSize(1, 1);
 		SetBitDepth(1);
-		fclose(fp);
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::ReadFromStream: file is corrupted");
+		}
 		return false;
 	}
 
@@ -645,13 +643,12 @@ bool BMP::ReadFromFile(const string& FileName)
 	// if bmih.biCompression 1 or 2, then the file is RLE compressed
 
 	if (bmih.biCompression == 1 or bmih.biCompression == 2) {
-		if (g_exceptions) {
-			throw runtime_error("EasyBMP::ReadFromFile: " + FileName + " is (RLE) compressed. " +
-								"EasyBMP does not support compression.");
-		}
 		SetSize(1, 1);
 		SetBitDepth(1);
-		fclose(fp);
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::ReadFromStream: file is (RLE) compressed. "
+								"EasyBMP does not support compression.");
+		}
 		return false;
 	}
 
@@ -659,25 +656,22 @@ bool BMP::ReadFromFile(const string& FileName)
 	// it's probably an OS2 bitmap file.
 
 	if (bmih.biCompression > 3) {
-		if (g_exceptions) {
-			throw runtime_error("EasyBMP::ReadFromFile: " + FileName + " is in an unsupported format." +
-								"(bmih.biCompression = " + to_string(bmih.biCompression) + "). " +
-								"The file may be an old OS2 bitmap or corrupted.");
-		}
 		SetSize(1, 1);
 		SetBitDepth(1);
-		fclose(fp);
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::ReadFromStream: file is an unsupported format."
+								"(bmih.biCompression = " + to_string(bmih.biCompression) + "). "
+								"The file may be an old OS2 bitmap or corrupted.");
+		}
 		return false;
 	}
 
 	if (bmih.biCompression == 3 and bmih.biBitCount != 16) {
-		if (g_exceptions) {
-			throw runtime_error("EasyBMP::ReadFromFile: " + FileName +
-								" uses bit fields and is not a 16-bit file. This is not supported.");
-		}
 		SetSize(1, 1);
 		SetBitDepth(1);
-		fclose(fp);
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::ReadFromStream: file uses bit fields and is not a 16-bit file. This is not supported.");
+		}
 		return false;
 	}
 
@@ -687,12 +681,11 @@ bool BMP::ReadFromFile(const string& FileName)
 	if (TempBitDepth != 1  and TempBitDepth != 4  and TempBitDepth != 8 and
 		TempBitDepth != 16 and TempBitDepth != 24 and TempBitDepth != 32)
 	{
-		if (g_exceptions) {
-			throw runtime_error("EasyBMP::ReadFromFile: " + FileName + " has unrecognized bit depth.");
-		}
 		SetSize(1, 1);
 		SetBitDepth(1);
-		fclose(fp);
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::ReadFromStream: unrecognized bit depth.");
+		}
 		return false;
 	}
 	SetBitDepth((int) bmih.biBitCount);
@@ -700,12 +693,11 @@ bool BMP::ReadFromFile(const string& FileName)
 	// set the size
 
 	if ((int) bmih.biWidth <= 0 or (int) bmih.biHeight <= 0) {
-		if (g_exceptions) {
-			throw runtime_error("EasyBMP::ReadFromFile: " + FileName + " has a non-positive width or height.");
-		}
 		SetSize(1, 1);
 		SetBitDepth(1);
-		fclose(fp);
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::ReadFromStream: negative width or height parameter.");
+		}
 		return false;
 	}
 	SetSize((int) bmih.biWidth , (int) bmih.biHeight);
@@ -730,7 +722,7 @@ bool BMP::ReadFromFile(const string& FileName)
 
 		if (NumberOfColorsToRead < TellNumberOfColors()) {
 			if (g_exceptions) {
-				throw runtime_error("EasyBMP::ReadFromFile: file " + FileName + " has an underspecified color table");
+				throw runtime_error("EasyBMP::ReadFromStream: color table under-specified");
 				// "The table will be padded with extrad white (255,255,255,0) entries."
 			}
 		}
@@ -738,7 +730,7 @@ bool BMP::ReadFromFile(const string& FileName)
 		int n;
 		for (n = 0; n < NumberOfColorsToRead; n++)
 		{
-			SafeFread((char*) &(Colors[n]), 4, 1, fp);
+			SafeFread((char*) &(Colors[n]), 4, 1, in);
 		}
 		for (n = NumberOfColorsToRead; n < TellNumberOfColors(); n++)
 		{
@@ -758,13 +750,13 @@ bool BMP::ReadFromFile(const string& FileName)
 	if (BitDepth == 16 and bmih.biCompression == 3) BytesToSkip -= 3*4;
 	if (BytesToSkip < 0 ) BytesToSkip = 0;
 	if (BytesToSkip > 0 and BitDepth != 16) {
-		if (g_exceptions) {
-			throw runtime_error("EasyBMP::ReadFromFile: extra meta data detected in file " + FileName);
-			// " Data will be skipped."
-		}
+//		if (g_exceptions) {
+//			throw runtime_error("EasyBMP::ReadFromStream: extra meta data detected");
+//			// " Data will be skipped."
+//		}
 		ebmpBYTE* TempSkipBYTE;
 		TempSkipBYTE = new ebmpBYTE[BytesToSkip];
-		SafeFread((char*) TempSkipBYTE, BytesToSkip, 1, fp);
+		SafeFread((char*) TempSkipBYTE, BytesToSkip, 1, in);
 		delete [] TempSkipBYTE;
 	}
 
@@ -776,34 +768,32 @@ bool BMP::ReadFromFile(const string& FileName)
 		int BufferSize = (int) ((Width * BitDepth) / 8.0 );
 		while (8 * BufferSize < Width * BitDepth) BufferSize++;
 		while (BufferSize % 4) BufferSize++;
-		ebmpBYTE* Buffer;
-		Buffer = new ebmpBYTE[BufferSize];
+		unique_ptr<ebmpBYTE> Buffer(new ebmpBYTE[BufferSize]);
 		j = Height - 1;
 		while (j > -1) {
-			int BytesRead = (int) fread((char*) Buffer, 1, BufferSize, fp);
-			if (BytesRead < BufferSize) {
+			in.read((char*) Buffer.get(), BufferSize);
+			if (in.gcount() < BufferSize) {
 				j = -1;
 				if (g_exceptions) {
-					throw runtime_error("EasyBMP::ReadFromFile: could not read proper amount of data.");
+					throw runtime_error("EasyBMP::ReadFromStream: could not read proper amount of data.");
 				}
 			}
 			else {
 				bool Success = false;
-				if (BitDepth == 1 ) Success = Read1bitRow( Buffer, BufferSize, j);
-				if (BitDepth == 4 ) Success = Read4bitRow( Buffer, BufferSize, j);
-				if (BitDepth == 8 ) Success = Read8bitRow( Buffer, BufferSize, j);
-				if (BitDepth == 24) Success = Read24bitRow(Buffer, BufferSize, j);
-				if (BitDepth == 32) Success = Read32bitRow(Buffer, BufferSize, j);
+				if (BitDepth == 1 ) Success = Read1bitRow( Buffer.get(), BufferSize, j);
+				if (BitDepth == 4 ) Success = Read4bitRow( Buffer.get(), BufferSize, j);
+				if (BitDepth == 8 ) Success = Read8bitRow( Buffer.get(), BufferSize, j);
+				if (BitDepth == 24) Success = Read24bitRow(Buffer.get(), BufferSize, j);
+				if (BitDepth == 32) Success = Read32bitRow(Buffer.get(), BufferSize, j);
 				if (not Success) {
 					if (g_exceptions) {
-						throw runtime_error("EasyBMP::ReadFromFile: could not read enough pixel data.");
+						throw runtime_error("EasyBMP::ReadFromStream: could not read enough pixel data.");
 					}
 					j = -1;
 				}
 			}
 			j--;
 		}
-		delete [] Buffer;
 	}
 
 	if (BitDepth == 16)
@@ -826,28 +816,28 @@ bool BMP::ReadFromFile(const string& FileName)
 			ebmpWORD TempMaskWORD;
 			//ebmpWORD ZeroWORD;
 
-			SafeFread((char*) &RedMask, 2, 1, fp );
+			SafeFread((char*) &RedMask, 2, 1, in);
 			if (IsBigEndian()) RedMask = FlipWORD(RedMask);
-			SafeFread((char*) &TempMaskWORD, 2, 1, fp );
+			SafeFread((char*) &TempMaskWORD, 2, 1, in);
 
-			SafeFread((char*) &GreenMask, 2, 1, fp );
+			SafeFread((char*) &GreenMask, 2, 1, in);
 			if (IsBigEndian()) GreenMask = FlipWORD(GreenMask);
-			SafeFread((char*) &TempMaskWORD, 2, 1, fp );
+			SafeFread((char*) &TempMaskWORD, 2, 1, in);
 
-			SafeFread( (char*) &BlueMask, 2, 1, fp );
+			SafeFread( (char*) &BlueMask, 2, 1, in);
 			if (IsBigEndian()) BlueMask = FlipWORD(BlueMask);
-			SafeFread((char*) &TempMaskWORD, 2, 1, fp );
+			SafeFread((char*) &TempMaskWORD, 2, 1, in);
 		}
 
 		// read and skip any meta data
 
 		if (BytesToSkip > 0) {
-			if (g_exceptions) {
-				throw runtime_error("EasyBMP::ReadFromFile: extra meta data detected in file " + FileName);
-			}
+//			if (g_exceptions) {
+//				throw runtime_error("EasyBMP::ReadFromStream: extra meta data detected");
+//			}
 			ebmpBYTE* TempSkipBYTE;
 			TempSkipBYTE = new ebmpBYTE[BytesToSkip];
-			SafeFread((char*) TempSkipBYTE, BytesToSkip, 1, fp);
+			SafeFread((char*) TempSkipBYTE, BytesToSkip, 1, in);
 			delete [] TempSkipBYTE;
 		}
 
@@ -870,7 +860,7 @@ bool BMP::ReadFromFile(const string& FileName)
 			int ReadNumber = 0;
 			while (ReadNumber < DataBytes) {
 				ebmpWORD TempWORD;
-				SafeFread((char*) &TempWORD, 2, 1, fp);
+				SafeFread((char*) &TempWORD, 2, 1, in);
 				if (IsBigEndian()) TempWORD = FlipWORD(TempWORD);
 				ReadNumber += 2;
 				
@@ -891,15 +881,57 @@ bool BMP::ReadFromFile(const string& FileName)
 			ReadNumber = 0;
 			while (ReadNumber < PaddingBytes) {
 				ebmpBYTE TempBYTE;
-				SafeFread((char*) &TempBYTE, 1, 1, fp);
+				SafeFread((char*) &TempBYTE, 1, 1, in);
 				ReadNumber++;
 			}
 		}
 	}
 	
-	fclose(fp);
 	return true;
 }
+
+
+bool BMP::ReadFromFile(const string& FileName)
+{
+	if (!EasyBMPcheckDataSize()) {
+		if (g_exceptions) {
+			throw runtime_error("EasyBMP::ReadFromStream: Data types are wrong size! "
+								"You may need to mess with EasyBMP_DataTypes.h to fix these errors, and then recompile. "
+								"All 32-bit and 64-bit machines should be supported, however.");
+		}
+		return false;
+	}
+
+	try {
+		ifstream stream(FileName, ios::binary);
+		if (not stream) {
+			if (g_exceptions) {
+				throw runtime_error("EasyBMP::ReadFromFile: cannot open file " + FileName + " for input.");
+			}
+			return false;
+		}
+
+		return ReadFromStream(stream);
+	}
+	catch (const exception& e) {
+		SetBitDepth(1);
+		SetSize(1, 1);
+		throw_with_nested(runtime_error("EasyBMP::ReadFromFile: failed to read file '" + FileName + "'"));
+	}
+	return false;
+}
+
+bool BMP::ReadFromBuffer(const unsigned char *buffer, size_t size)
+{
+	// No need to catch exceptions for a buffer since we can't add useful info
+
+	// Dropping const with cast should be OK.
+	ReadBuf streambuffer((char*) buffer, size);
+	istream stream(&streambuffer);
+
+	return ReadFromStream(stream);
+}
+
 
 bool BMP::CreateStandardColorTable( void )
 {
@@ -1052,15 +1084,6 @@ bool BMP::CreateStandardColorTable( void )
 	return true;
 }
 
-bool SafeFread(char* buffer, int size, int number, FILE* fp)
-{
-	int ItemsRead;
-	if (feof(fp)) return false;
-	ItemsRead = (int) fread(buffer, size, number, fp);
-	if (ItemsRead < number) return false;
-	return true;
-}
-
 void BMP::SetDPI(int HorizontalDPI, int VerticalDPI)
 {
 	XPelsPerMeter = (int) (HorizontalDPI * 39.37007874015748);
@@ -1099,11 +1122,11 @@ BMFH GetBMFH(const string& szFileNameIn)
 		return bmfh;
 	}
 
-	SafeFread((char*) &(bmfh.bfType), sizeof(ebmpWORD), 1, fp );
-	SafeFread((char*) &(bmfh.bfSize), sizeof(ebmpDWORD), 1, fp );
-	SafeFread((char*) &(bmfh.bfReserved1), sizeof(ebmpWORD), 1, fp );
-	SafeFread((char*) &(bmfh.bfReserved2), sizeof(ebmpWORD), 1, fp );
-	SafeFread((char*) &(bmfh.bfOffBits), sizeof(ebmpDWORD), 1, fp );
+	fread((char*) &(bmfh.bfType), sizeof(ebmpWORD), 1, fp);
+	fread((char*) &(bmfh.bfSize), sizeof(ebmpDWORD), 1, fp);
+	fread((char*) &(bmfh.bfReserved1), sizeof(ebmpWORD), 1, fp);
+	fread((char*) &(bmfh.bfReserved2), sizeof(ebmpWORD), 1, fp);
+	fread((char*) &(bmfh.bfOffBits), sizeof(ebmpDWORD), 1, fp);
 
 	fclose(fp);
 
@@ -1129,23 +1152,23 @@ BMIH GetBMIH(const string& szFileNameIn)
 	// read the bmfh, i.e., first 14 bytes (just to get it out of the way);
 
 	ebmpBYTE TempBYTE;
-	for (int i = 14; i > 0; i--) SafeFread((char*) &TempBYTE, sizeof(ebmpBYTE), 1, fp);
+	for (int i = 14; i > 0; i--) fread((char*) &TempBYTE, sizeof(ebmpBYTE), 1, fp);
 
 	// read the bmih
 
-	SafeFread((char*) &(bmih.biSize), sizeof(ebmpDWORD), 1, fp);
-	SafeFread((char*) &(bmih.biWidth), sizeof(ebmpDWORD), 1, fp);
-	SafeFread((char*) &(bmih.biHeight), sizeof(ebmpDWORD), 1, fp);
-	SafeFread((char*) &(bmih.biPlanes), sizeof(ebmpWORD), 1, fp);
+	fread((char*) &(bmih.biSize), sizeof(ebmpDWORD), 1, fp);
+	fread((char*) &(bmih.biWidth), sizeof(ebmpDWORD), 1, fp);
+	fread((char*) &(bmih.biHeight), sizeof(ebmpDWORD), 1, fp);
+	fread((char*) &(bmih.biPlanes), sizeof(ebmpWORD), 1, fp);
 
-	SafeFread((char*) &(bmih.biBitCount), sizeof(ebmpWORD), 1, fp);
-	SafeFread((char*) &(bmih.biCompression), sizeof(ebmpDWORD), 1, fp);
-	SafeFread((char*) &(bmih.biSizeImage), sizeof(ebmpDWORD), 1, fp);
-	SafeFread((char*) &(bmih.biXPelsPerMeter), sizeof(ebmpDWORD), 1, fp);
+	fread((char*) &(bmih.biBitCount), sizeof(ebmpWORD), 1, fp);
+	fread((char*) &(bmih.biCompression), sizeof(ebmpDWORD), 1, fp);
+	fread((char*) &(bmih.biSizeImage), sizeof(ebmpDWORD), 1, fp);
+	fread((char*) &(bmih.biXPelsPerMeter), sizeof(ebmpDWORD), 1, fp);
 
-	SafeFread((char*) &(bmih.biYPelsPerMeter), sizeof(ebmpDWORD), 1, fp);
-	SafeFread((char*) &(bmih.biClrUsed), sizeof(ebmpDWORD), 1, fp);
-	SafeFread((char*) &(bmih.biClrImportant), sizeof(ebmpDWORD), 1, fp);
+	fread((char*) &(bmih.biYPelsPerMeter), sizeof(ebmpDWORD), 1, fp);
+	fread((char*) &(bmih.biClrUsed), sizeof(ebmpDWORD), 1, fp);
+	fread((char*) &(bmih.biClrImportant), sizeof(ebmpDWORD), 1, fp);
 
 	fclose(fp);
 

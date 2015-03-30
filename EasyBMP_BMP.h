@@ -21,7 +21,6 @@
 #ifndef _EasyBMP_BMP_h_
 #define _EasyBMP_BMP_h_
 
-bool SafeFread(char* buffer, int size, int number, FILE* fp);
 bool EasyBMPcheckDataSize(void);
 
 class BMP {
@@ -76,6 +75,7 @@ public:
 	bool SetSize(int NewWidth, int NewHeight);
 	bool SetBitDepth(int NewDepth);
 
+	bool ReadFromStream(std::istream& instream);
 	bool ReadFromFile(const std::string& FileName);
 	bool ReadFromBuffer(const unsigned char* buffer, size_t size);
 
