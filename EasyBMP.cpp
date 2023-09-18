@@ -722,12 +722,16 @@ bool BMP::ReadFromStream(istream& in)
 		int NumberOfColorsToRead = ((int) bmfh.bfOffBits - 54 ) / 4;
 		if (NumberOfColorsToRead > IntPow(2, BitDepth)) NumberOfColorsToRead = IntPow(2, BitDepth);
 
+		/* REVISIT: Why was this exception thrown when the following code pads the color table?
+					I don't think there's any need to check for this as the BMP is still valid.
+					
 		if (NumberOfColorsToRead < TellNumberOfColors()) {
 			if (g_exceptions) {
 				throw runtime_error("EasyBMP::ReadFromStream: color table under-specified");
 				// "The table will be padded with extrad white (255,255,255,0) entries."
 			}
 		}
+		*/
 
 		int n;
 		for (n = 0; n < NumberOfColorsToRead; n++)
