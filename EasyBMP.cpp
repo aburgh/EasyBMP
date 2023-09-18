@@ -476,8 +476,10 @@ bool BMP::WriteToFile(const string& FileName)
 		int NumberOfColors = IntPow(2,BitDepth);
 
 		// if there is no palette, create one
-		if (not Colors)	Colors = new RGBApixel[NumberOfColors];
-		CreateStandardColorTable();
+		if (not Colors)	{
+			Colors = new RGBApixel[NumberOfColors];
+			CreateStandardColorTable();
+		}
 
 		for (int n = 0; n < NumberOfColors; n++ ) {
 			fwrite((char*) &(Colors[n]), 4, 1, fp);
