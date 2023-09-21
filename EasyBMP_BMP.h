@@ -52,11 +52,16 @@ private:
 
 	ebmpBYTE FindClosestColor(RGBApixel& input);
 
+	bool VerticalFlip{false};
+	bool HorizontalFlip{false};
+
 public:
 
 	int TellBitDepth(void);
 	int TellWidth(void);
 	int TellHeight(void);
+	int AbsWidth(void);
+	int AbsHeight(void);
 	int TellNumberOfColors(void);
 	void SetDPI(int HorizontalDPI, int VerticalDPI);
 	int TellVerticalDPI(void);

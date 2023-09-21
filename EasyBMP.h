@@ -31,6 +31,8 @@
 #include <cmath>
 #include <cctype>
 #include <cstring>
+#include <memory>
+#include <vector>
 
 #ifndef EasyBMP
 #define EasyBMP
